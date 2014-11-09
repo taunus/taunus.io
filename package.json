@@ -1,6 +1,9 @@
 {
   "name": "taunus.bevacqua.io",
   "version": "1.0.0",
+  "engines": {
+    "node": "0.10.x"
+  },
   "description": "Documentation mini-site for Taunus. Built on Taunus!",
   "main": "app.js",
   "repository": {
