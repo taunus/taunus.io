@@ -1,0 +1,20 @@
+{
+  "name": "taunus.bevacqua.io",
+  "version": "1.0.0",
+  "description": "Documentation mini-site for Taunus",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bevacqua/taunus.bevacqua.io.git"
+  },
+  "author": "Nicolas Bevacqua <nicolasbevacqua@gmail.com> (http://bevacqua.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bevacqua/taunus.bevacqua.io/issues"
+  },
+  "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
+  "dependencies": {
+    "hapi": "^7.5.0",
+    "taunus": "^2.0.0"
+  }
+}
