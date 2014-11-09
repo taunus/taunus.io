@@ -1,6 +1,6 @@
 [![Taunus Documentation][1]][2]
 
-> Documentation mini-site for Taunus. Built on Taunus
+> Documentation mini-site for Taunus. Built on Taunus!
 
 This is the official documentation site for Taunus. It uses Taunus to document itself, so that you can also look at the code and learn more about how its used.
 
