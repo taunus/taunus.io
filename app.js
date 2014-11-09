@@ -3,7 +3,7 @@
 var Hapi = require('hapi');
 var taunus = require('taunus');
 var taunusHapi = require('taunus-hapi')(taunus);
-var routes = require('./routes');
+var routes = require('./controllers/routes');
 var port = process.env.PORT || 3000;
 var pack = new Hapi.Pack();
 

@@ -13,8 +13,17 @@
     "url": "https://github.com/bevacqua/taunus.bevacqua.io/issues"
   },
   "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
+  "scripts": {
+    "start": "jadum views/**/* -o .bin && nodemon app"
+  },
   "dependencies": {
     "hapi": "^7.5.0",
-    "taunus": "^2.0.0"
+    "hapiify": "^1.0.0",
+    "jadum": "^1.1.2",
+    "taunus": "^2.1.0",
+    "taunus-hapi": "^1.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.2.1"
   }
 }
