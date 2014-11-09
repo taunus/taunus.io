@@ -5,7 +5,7 @@ try {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (undefined, require) {
+;var locals_for_with = (locals || {});(function (undefined) {
 jade_debug.unshift({ lineno: 0, filename: "views/documentation/home.jade" });
 jade_debug.unshift({ lineno: 1, filename: "views/documentation/home.jade" });
 buf.push("<h1>");
@@ -17,10 +17,10 @@ jade_debug.shift();
 buf.push("</h1>");
 jade_debug.shift();
 jade_debug.unshift({ lineno: 3, filename: "views/documentation/home.jade" });
-buf.push(require("../error/not-found").call(this, locals));
+buf.push("<h1 id=\"foo\">foo</h1>\n");
 jade_debug.shift();
-jade_debug.shift();}.call(this,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined,"require" in locals_for_with?locals_for_with.require:typeof require!=="undefined"?require:undefined));;return buf.join("");
+jade_debug.shift();}.call(this,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 } catch (err) {
-  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "h1 Taunus Documentation Home\n\ninclude ../error/not-found\n");
+  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "h1 Taunus Documentation Home\n\n:markdown\n  # foo\n");
 }
 }

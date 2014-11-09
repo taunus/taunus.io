@@ -1,0 +1,5 @@
+#!/bin/bash
+
+jadum views/**/* -o .bin
+taunus -ot hapiify
+nodemon app

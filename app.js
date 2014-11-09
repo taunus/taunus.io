@@ -4,6 +4,7 @@ var Hapi = require('hapi');
 var taunus = require('taunus');
 var taunusHapi = require('taunus-hapi')(taunus);
 var routes = require('./controllers/routes');
+var layout = require('./.bin/views/layout')
 var port = process.env.PORT || 3000;
 var pack = new Hapi.Pack();
 
@@ -11,7 +12,8 @@ pack.server('localhost', port);
 pack.register({
   plugin: taunusHapi,
   options: {
-    routes: routes
+    routes: routes,
+    layout: layout
   }
 }, registered);
 

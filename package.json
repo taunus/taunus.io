@@ -1,7 +1,7 @@
 {
   "name": "taunus.bevacqua.io",
   "version": "1.0.0",
-  "description": "Documentation mini-site for Taunus",
+  "description": "Documentation mini-site for Taunus. Built on Taunus!",
   "main": "app.js",
   "repository": {
     "type": "git",
@@ -14,13 +14,13 @@
   },
   "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
   "scripts": {
-    "start": "jadum views/**/* -o .bin && nodemon app"
+    "start": "./start"
   },
   "dependencies": {
     "hapi": "^7.5.0",
     "hapiify": "^1.0.0",
-    "jadum": "^1.1.2",
-    "taunus": "^2.1.0",
+    "jadum": "^1.2.0",
+    "taunus": "^2.2.1",
     "taunus-hapi": "^1.1.0"
   },
   "devDependencies": {
