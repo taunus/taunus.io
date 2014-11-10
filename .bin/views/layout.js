@@ -1,8 +1,80 @@
 var jade = require("jadum/runtime");
 module.exports = function layout(locals) {
+var jade_debug = [{ lineno: 1, filename: "views/layout.jade" }];
+try {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (model, partial) {
-buf.push("<!DOCTYPE html><html lang=\"en\" itemscope itemtype=\"http://schema.org/Blog\"><head><title>" + (jade.escape(null == (jade_interp = model.title) ? "" : jade_interp)) + "</title><meta charset=\"utf-8\"><link rel=\"shortcut icon\" href=\"/favicon.ico\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head><body id=\"top\"><header><h1><a href=\"/\" aria-label=\"Go to home\">Taunus</a></h1></header><main data-taunus=\"model\">" + (null == (jade_interp = partial) ? "" : jade_interp) + "</main></body></html>");}.call(this,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"partial" in locals_for_with?locals_for_with.partial:typeof partial!=="undefined"?partial:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (undefined, model, partial) {
+jade_debug.unshift({ lineno: 0, filename: "views/layout.jade" });
+jade_debug.unshift({ lineno: 1, filename: "views/layout.jade" });
+buf.push("<!DOCTYPE html>");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 2, filename: "views/layout.jade" });
+buf.push("<html lang=\"en\" itemscope itemtype=\"http://schema.org/Blog\">");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 3, filename: "views/layout.jade" });
+buf.push("<head>");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 4, filename: "views/layout.jade" });
+buf.push("<title>" + (jade.escape(null == (jade_interp = model.title) ? "" : jade_interp)));
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.shift();
+buf.push("</title>");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 5, filename: "views/layout.jade" });
+buf.push("<meta charset=\"utf-8\">");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 6, filename: "views/layout.jade" });
+buf.push("<link rel=\"shortcut icon\" href=\"/favicon.ico\">");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 7, filename: "views/layout.jade" });
+buf.push("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 8, filename: "views/layout.jade" });
+buf.push("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</head>");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 10, filename: "views/layout.jade" });
+buf.push("<body id=\"top\">");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 11, filename: "views/layout.jade" });
+buf.push("<header>");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 12, filename: "views/layout.jade" });
+buf.push("<h1>");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 13, filename: "views/layout.jade" });
+buf.push("<a href=\"/\" aria-label=\"Go to home\">");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 13, filename: jade_debug[0].filename });
+buf.push("Taunus");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</a>");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</h1>");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</header>");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 15, filename: "views/layout.jade" });
+buf.push("<main data-taunus=\"model\">" + (null == (jade_interp = partial) ? "" : jade_interp));
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.shift();
+buf.push("</main>");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</body>");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</html>");
+jade_debug.shift();
+jade_debug.shift();}.call(this,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"partial" in locals_for_with?locals_for_with.partial:typeof partial!=="undefined"?partial:undefined));;return buf.join("");
+} catch (err) {
+  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "doctype html\nhtml(lang='en', itemscope, itemtype='http://schema.org/Blog')\n  head\n    title=model.title\n    meta(charset='utf-8')\n    link(rel='shortcut icon', href='/favicon.ico')\n    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')\n    meta(name='viewport', content='width=device-width, initial-scale=1')\n\n  body#top\n    header\n      h1\n        a(href='/', aria-label='Go to home') Taunus\n\n    main(data-taunus='model')!=partial\n");
+}
 }

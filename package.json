@@ -18,7 +18,7 @@
   "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
   "scripts": {
     "start": "./start",
-    "production": "./production"
+    "deploy": "./production && npm version -m \"Bump to %s because deploy\" && git commit -am \"Pre-deploy commit because $(emoji-random) \" && git push heroku master"
   },
   "dependencies": {
     "hapi": "^7.5.0",
@@ -29,6 +29,7 @@
     "ultramarked": "^1.6.3"
   },
   "devDependencies": {
+    "emoji-random": "^0.1.2",
     "nodemon": "^1.2.1"
   }
 }
