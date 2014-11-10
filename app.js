@@ -24,3 +24,7 @@ function registered () {
 function started () {
   console.log('Hapi listening on port %s', port);
 }
+
+process.on('exit', function () {
+  console.log('Shutting down...');
+});
