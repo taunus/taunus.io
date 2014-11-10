@@ -25,7 +25,8 @@
     "hapiify": "^1.0.0",
     "jadum": "^1.2.0",
     "taunus": "^2.2.1",
-    "taunus-hapi": "^1.1.0"
+    "taunus-hapi": "^1.1.0",
+    "ultramarked": "^1.6.3"
   },
   "devDependencies": {
     "nodemon": "^1.2.1"
