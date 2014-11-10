@@ -2,5 +2,5 @@
 
 rm -rf .bin
 jadum views/** -o .bin
-taunus -ot hapiify
+taunus -wot hapiify
 nodemon app

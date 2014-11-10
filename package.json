@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
   "scripts": {
-    "start": "./start"
+    "start": "./start",
+    "production": "./production"
   },
   "dependencies": {
     "hapi": "^7.5.0",
