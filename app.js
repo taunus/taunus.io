@@ -8,7 +8,7 @@ var layout = require('./.bin/views/layout')
 var port = ~~process.env.PORT || 3000;
 var pack = new Hapi.Pack();
 
-pack.server('localhost', port);
+pack.server('0.0.0.0', port);
 pack.register({
   plugin: taunusHapi,
   options: {
