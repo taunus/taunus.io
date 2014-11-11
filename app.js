@@ -5,7 +5,7 @@ var taunus = require('taunus');
 var taunusHapi = require('taunus-hapi')(taunus);
 var routes = require('./controllers/routes');
 var layout = require('./.bin/views/layout')
-var port = ~~process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 var pack = new Hapi.Pack();
 
 pack.server('0.0.0.0', port);
@@ -24,7 +24,3 @@ function registered () {
 function started () {
   console.log('Hapi listening on port %s', port);
 }
-
-process.on('exit', function () {
-  console.log('Shutting down...');
-});
