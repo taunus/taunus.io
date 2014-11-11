@@ -1,6 +1,23 @@
 #!/bin/bash
 
+# clean up .bin directory
 rm -rf .bin
+
+# build expected directory structure
+mkdir -p .bin/{views,public/{js,css}}
+
+# compile css into a single bundle
+stylus client/css/all.styl -o .bin/public/css --include-css --include client/css --watch &
+
+# compile each view individually into a CommonJS module
 jadum views/** -o .bin
-taunus -wot hapiify
+jadum views/** -o .bin --watch &
+
+# compile taunus routes and controllers for the client-side
+taunus -ot hapiify
+
+# compile client-side javascript and wait for changes to recompile it
+watchify client/js/main.js -o .bin/public/js/all.js --basedir client/js --debug --verbose &
+
+# `node app` and watch for changes
 nodemon app

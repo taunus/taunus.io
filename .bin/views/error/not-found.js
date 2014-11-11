@@ -16,8 +16,32 @@ jade_debug.shift();
 jade_debug.shift();
 buf.push("</h1>");
 jade_debug.shift();
+jade_debug.unshift({ lineno: 3, filename: "views/error/not-found.jade" });
+buf.push("<p>");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 3, filename: jade_debug[0].filename });
+buf.push("There doesn't seem to be anything here yet. If you believe this to be a mistake, please let us know!");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</p>");
+jade_debug.shift();
+jade_debug.unshift({ lineno: 4, filename: "views/error/not-found.jade" });
+buf.push("<p>");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 5, filename: "views/error/not-found.jade" });
+buf.push("<a href=\"https://twitter.com/nzgb\" target=\"_blank\">");
+jade_debug.unshift({ lineno: undefined, filename: jade_debug[0].filename });
+jade_debug.unshift({ lineno: 5, filename: jade_debug[0].filename });
+buf.push("&mdash; @nzgb");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</a>");
+jade_debug.shift();
+jade_debug.shift();
+buf.push("</p>");
+jade_debug.shift();
 jade_debug.shift();}.call(this,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 } catch (err) {
-  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "h1 Not Found\n");
+  jade.rethrow(err, jade_debug[0].filename, jade_debug[0].lineno, "h1 Not Found\n\np There doesn't seem to be anything here yet. If you believe this to be a mistake, please let us know!\np\n  a(href='https://twitter.com/nzgb', target='_blank') &mdash; @nzgb\n");
 }
 }

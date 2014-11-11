@@ -1,0 +1,56 @@
+c-github-code = #f8f8f8
+
+.md-markdown
+  pre code
+    padding 0 6px 2px
+    line-height 22px
+    margin 0 2px
+
+  code
+    display inline-block
+    padding 3px 4px
+    color #333
+    background #f8f8f8
+
+  pre,
+  code
+    background-color c-github-code
+
+  blockquote
+    position relative
+    margin 0
+    padding 12px 12px 12px 52px
+    background-color rgba(c-pink, 0.05)
+
+    &:before
+      position absolute
+      left 12px
+      content '“'
+      color c-pink
+      text-shadow 0 1px c-strong
+      font-size 65px
+      font-weight 700
+      line-height 40px
+      margin-right 10px
+
+  img
+    margin 1em 0
+
+    &:first-child
+      margin-top 0
+
+    &:last-child
+      margin-bottom 0
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p
+    &:first-child
+      margin-top 0
+
+    &:last-child
+      margin-bottom 0

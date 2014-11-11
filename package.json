@@ -24,12 +24,14 @@
     "hapi": "^7.5.0",
     "hapiify": "^1.0.0",
     "jadum": "^1.2.0",
-    "taunus": "^2.2.1",
+    "taunus": "^2.4.1",
     "taunus-hapi": "^1.1.0",
-    "ultramarked": "^1.6.3"
+    "ultramarked": "^1.7.0"
   },
   "devDependencies": {
     "emoji-random": "^0.1.2",
-    "nodemon": "^1.2.1"
+    "nib": "^1.0.4",
+    "nodemon": "^1.2.1",
+    "normalize.css": "^3.0.2"
   }
 }
