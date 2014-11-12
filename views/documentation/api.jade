@@ -4,6 +4,226 @@ section.ly-section.md-markdown
 
     Here's the API documentation for Taunus. If you've never used it before, we recommend going over the [Getting Started][1] guide before jumping into the API documentation. That way, you'll get a better idea of what to look for and how to put together simple applications using Taunus, before going through documentation on every public interface to Taunus.
 
-    Foo
+    Taunus exposes _three different public APIs_, and there's also **plugins to integrate Taunus and an HTTP server**. This document covers all three APIs extensively. If you're concerned about the inner workings of Taunus, please refer to the [Getting Started][1] guide. This document aims to only cover how the public interface affects application state, but **doesn't delve into implementation details**.
+
+    # Table of Contents
+
+    - A [server-side API](#server-side-api) that deals with server-side rendering
+      - The `taunus.mount` method
+        - The `options` object
+          - `layout`
+          - `routes`
+          - `getDefaultViewModel`
+          - `plaintext`
+          - `resolvers`
+        - The `addRoute` method
+      - The `taunus.render` method
+      - The `taunus.rebuildDefaultViewModel` method
+    - A [suite of plugins](#http-framework-plugins) can integrate Taunus and an HTTP server
+      - Using `taunus-express` for [Express][2]
+      - Using `taunus-hapi` for [Hapi][3]
+    - A [client-side API](#client-side-api) that deals with client-side rendering
+      - The `taunus.mount` method
+      - The `taunus.on` method
+      - The `taunus.once` method
+      - The `taunus.off` method
+      - The `taunus.intercept` method
+      - The `taunus.partial` method
+      - The `taunus.navigate` method
+      - The `taunus.state` property
+      - The `taunus.route` method
+    - A CLI that facilitates a wiring module to make the server-to-client transition easier
+      - The `--output <dest>` flag
+      - The `--watch` flag
+      - The `--transform <module>` flag
+      - The `--replacements <module>` flag
+      - The `--standalone` flag
+
+    # Server-side API
+
+    The server-side API is used to set up the view router
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.mount(addRoute, options)`
+
+    Mounts Taunus on top of a server-side router, by registering each route in `options.routes` with the `addRoute` method.
+
+    > Note that most of the time, **this method shouldn't be invoked directly**, but rather through one of the [HTTP framework plugins](#http-framework-plugins) presented below.
+
+    Here's an incomplete example of how this method may be used. It is incomplete because route definitions have more options beyond the `route` and `action` properties.
+
+    ```js
+    taunus.mount(addRoute, {
+      routes: [{ route: '/', action: 'home/index' }]
+    });
+
+    function addRoute (definition) {
+      app.get(definition.route, definition.action);
+    }
+    ```
+
+    Let's go over the options you can pass to `taunus.mount` first.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### The `options` object
+
+    There's a few options that can be passed to the server-side mountpoint. You're probably going to be passing these to your [HTTP framework plugin](#http-framework-plugins), rather than using `taunus.mount` directly.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.layout`
+
+    The `layout` property is expected to have the `function(data)` signature. It'll be invoked whenever a full HTML document needs to be rendered, and a `data` object will be passed to it. That object will contain everything you've set as the view model, plus a `partial` property containing the raw HTML of the rendered partial view. Your `layout` method will typically wrap the raw HTML for the partial with the bare bones of an HTML document. Check out [the `layout.jade` used in Pony Foo][4] as an example.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.routes`
+
+    The other big option is `routes`, which expects a collection of route definitions. Route definitions use a number of properties to determine how the route is going to behave.
+
+    Here's an example route that uses the [Express][2] routing scheme.
+
+    ```js
+    {
+      route: '/articles/:slug',
+      action: 'articles/article',
+      ignore: false,
+      cache: <inherit>
+    }
+    ```
+
+    - `route` is a route in the format your HTTP framework of choice understands
+    - `action` is the name of your controller action. It'll be used to find the server-side controller, the default view that should be used with this route, and the client-side controller
+    - `cache` can be used to determine the client-side caching behavior in this application path, and it'll default to inheriting from the options passed to `taunus.mount` _on the client-side_
+    - `ignore` is used in those cases where you want a URL to be ignored by the client-side router even if there's a catch-all route that would match that URL
+
+    As an example of the `ignore` use case, consider the routing table shown below. The client-side router doesn't know _(and can't know unless you point it out)_ what routes are server-side only, and it's up to you to point those out.
+
+    ```js
+    [
+      { route: '/', action: '/home/index' },
+      { route: '/feed', ignore: true },
+      { route: '/*', action: 'error/not-found' }
+    ]
+    ```
+
+    This step is necessary whenever you have an anchor link pointed at something like an RSS feed. The `ignore` property is effectively telling the client-side _"don't hijack links containing this URL"_.
+
+    Please note that external links are never hijacked. Only same-origin links containing a URL that matches one of the routes will be hijacked by Taunus. External links don't need to be `ignore`d.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.getDefaultViewModel`
+
+    The `getDefaultViewModel(done)` property can be a method that puts together the base view model, which will then be extended on an action-by-action basis. When you're done creating a view model, you can invoke `done(null, model)`. If an error occurs while building the view model, you should call `done(err)` instead.
+
+    Taunus will throw an error if `done` is invoked with an error, so you might want to put safeguards in place as to avoid that from happenning. The reason this method is asynchronous is because you may need database access or somesuch when putting together the defaults. The reason this is a method and not just an object is that the defaults may change due to human interaction with the application, and in those cases [the defaults can be rebuilt](#taunus-rebuilddefaultviewmodel).
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.plaintext`
+
+    The `plaintext` options object is passed directly to [hget][5], and it's used to [tweak the plaintext version][6] of your site.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.resolvers`
+
+    Resolvers are used to determine the location of some of the different pieces of your application. Typically you won't have to touch these in the slightest.
+
+    Signature                         | Description
+    ----------------------------------|------------------------------------------------------
+    `getControllerActionPath(action)` | Return path to server-side controller action handler module
+    `getViewTemplatePath(action)`     | Return path to view template module
+
+    The `addRoute` method passed to `taunus.mount` on the server-side is mostly going to be used internally by the HTTP framework plugins, so feel free to skip over the following section.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### `addRoute(definition)`
+
+    The `addRoute(definition)` method will be passed a route definition, containing the following properties. This method is expected to register a route in your HTTP framework's router.
+
+    - `route` is the route that you set as `definition.route`
+    - `action` is the action as passed to the route definition
+    - `actionFn` will be the controller for this action method
+    - `middleware` will be an array of methods to be executed before `actionFn`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.render(action, viewModel, req, res, next)`
+
+    This method is almost an implementation detail as you should be using Taunus through one of the plugins anyways, so we won't go very deep into it.
+
+    The render method is what Taunus uses to render views by constructing HTML, JSON, or plaintext responses. The `action` property determines the default view that will be rendered. The `viewModel` will be extended by [the default view model](#options-getdefaultviewmodel), and it may also override the default `action` by setting `viewModel.model.action`.
+
+    The `req`, `res`, and `next` arguments are expected to be the Express routing arguments, but they can also be mocked _(which is in fact what the Hapi plugin does)_.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.rebuildDefaultViewModel(done)`
+
+    Once Taunus has been mounted, calling this method will rebuild the view model defaults using the `getDefaultViewModel` that was passed to `taunus.mount` in the options. An optional `done` callback will be invoked when the model is rebuilt.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # HTTP Framework Plugins
+
+    There's currently two different HTTP frameworks _([Express][2] and [Hapi][3])_ that you can readily use with Taunus without having to deal with any of the route plumbing yourself.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## Using `taunus-express`
+
+    The `taunus-express` plugin is probably the easiest to use, as Taunus was originally developed with just [Express][2] in mind. In addition to the options already outlined for [taunus.mount](#taunus-mount-addroute-options-), you can add middleware for any route individually.
+
+    - `middleware` are any methods you want Taunus to execute as middleware in Express applications
+
+    To get `taunus-express` going you can use the following piece of code, provided that you come up with an `options` object.
+
+    ```js
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      // ...
+    };
+
+    taunusExpress(taunus, app, options);
+    ```
+
+    The `taunus-express` module will merely set up Taunus and add the relevant routes to your Express application by calling `app.get` a bunch of times.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## Using `taunus-hapi`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # Client-side API
+    ## `taunus.mount(container, wiring, options)`
+    ## `taunus.on(type, fn)`
+    ## `taunus.once(type, fn)`
+    ## `taunus.off(type, fn)`
+    ## `taunus.intercept(action, fn)`
+    ## `taunus.partial(container, action, model, route)`
+    ## `taunus.navigate(url)`
+    ## `taunus.route(url)`
+    ## `taunus.state`
+
+    # Command-Line Interface
+    ## `--output <dest>`
+    ## `--watch`
+    ## `--transform <module>`
+    ## `--replacements <module>`
+    ## `--standalone`
 
     [1]: /getting-started
+    [2]: http://expressjs.com
+    [3]: http://hapijs.com
+    [4]: https://github.com/ponyfoo/ponyfoo/blob/33271751312db6e92059d98293d0a7ac6e9e8e5b/views/server/layout/layout.jade
+    [5]: https://github.com/bevacqua/hget
+    [6]: https://github.com/ponyfoo/ponyfoo/blob/f6d6b5068ff03a387f503900160d9fdc1e749750/controllers/routing.js#L70-L72

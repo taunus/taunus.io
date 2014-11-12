@@ -505,25 +505,25 @@ a:hover {
   text-shadow: 0 1px rgba(0,0,0,0.2);
 }
 thead th {
-  background-color: #95cfb7;
-  color: #fff;
+  background-color: #f2f26f;
+  color: #f04155;
   text-transform: uppercase;
   font-family: 'Unica One', 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
 }
 tbody tr:nth-child(even) {
-  background-color: rgba(149,207,183,0.5);
+  background-color: rgba(242,242,111,0.3);
 }
 tbody tr:nth-child(odd) {
-  background-color: rgba(149,207,183,0.7);
+  background-color: rgba(242,242,111,0.5);
 }
 tr {
   border-width: 3px;
   border-style: solid;
-  border-color: #95cfb7;
+  border-color: #f2f26f;
   border-top: none;
 }
 thead tr {
-  border-top: 3px solid #95cfb7;
+  border-top: 3px solid #f2f26f;
 }
 body {
   font-family: 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
@@ -676,6 +676,8 @@ h4 {
   padding-bottom: 6px;
 }
 table {
+  display: block;
+  overflow: scroll;
   width: 100%;
   margin: 10px 0;
 }

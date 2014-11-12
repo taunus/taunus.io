@@ -8,6 +8,7 @@ function routing (pack) {
   assets('css');
   redirection('/about', '/');
   redirection('/source-code', 'https://github.com/taunus/taunus');
+  redirection('/changelog', 'https://github.com/taunus/taunus/blob/master/CHANGELOG.md');
 
   function favicon () {
     pack.route({

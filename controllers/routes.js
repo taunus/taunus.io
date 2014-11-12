@@ -7,5 +7,6 @@ module.exports = [
   { route: '/complements', action: 'documentation/complements' },
   { route: '/performance', action: 'documentation/performance' },
   { route: '/source-code', ignore: true },
+  { route: '/changelog', ignore: true },
   { route: '/{catchall*}', action: 'error/not-found' }
 ];
