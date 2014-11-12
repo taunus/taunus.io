@@ -4,7 +4,24 @@ section.ly-section.md-markdown
 
     Taunus is a shared-rendering MVC engine for Node.js, and it's _up to you how to use it_. In fact, it might be a good idea for you to **set up just the server-side aspect first**, as that'll teach you how it works even when JavaScript never gets to the client.
 
-    # How It works
+    # Table of Contents
+
+    - [How it works](#how-it-works)
+    - [Installing Taunus](#installing-taunus)
+    - [Setting up the server-side](#setting-up-the-server-side)
+      - [Creating a layout](#creating-a-layout)
+      - [Your first route](#your-first-route)
+      - [Using Jade as your view engine](#using-jade-as-your-view-engine)
+      - [Throwing in a controller](#throwing-in-a-controller)
+    - [Taunus in the client](#taunus-in-the-client)
+      - [Using the Taunus CLI](#using-the-taunus-cli)
+      - [Booting up the client-side router](#booting-up-the-client-side-router)
+      - [Adding functionality in a client-side controller](#adding-functionality-in-a-client-side-controller)
+      - [Using the Taunus API](#using-the-taunus-api)
+      - [Caching and Prefetching](#caching-and-prefetching)
+    - [The sky is the limit!](#the-sky-is-the-limit-)
+
+    # How it works
 
     Taunus follows a simple but **proven** set of rules.
 
@@ -21,6 +38,10 @@ section.ly-section.md-markdown
     - When you get the JSON model back, render views on the client-side
     - If the `history` API is unavailable, fall back to good old request-response. **Don't confuse your humans with obscure hash routers!**
 
+    I'll step you through these, but rather than looking at implementation details, I'll walk you through the steps you need to take in order to make this flow happen.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     # Installing Taunus
 
     First off, you'll need to choose a HTTP server framework for your application. At the moment Taunus supports only a couple of HTTP frameworks, but more may be added if they are popular enough.
@@ -31,6 +52,10 @@ section.ly-section.md-markdown
     > If you're more of a _"rummage through someone else's code"_ type of developer, you may feel comfortable [going through this website's source code][4], which uses the [Hapi][7] flavor of Taunus. Alternatively you can look at the source code for [ponyfoo.com][5], which is **a more advanced use-case** under the [Express][6] flavor. Or, you could just keep on reading this page, that's okay too.
 
     Once you've settled for either [Express][6] or [Hapi][7] you'll be able to proceed. For the purposes of this guide, we'll use [Express][6]. Switching between one of the different HTTP flavors is strikingly easy, though.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Setting up the server-side
 
     Naturally, you'll need to install all of the following modules from `npm` to get started.
 
@@ -59,12 +84,61 @@ section.ly-section.md-markdown
     app.listen(3000);
     ```
 
-    All that `taunus-express` really does is add a bunch of routes to your Express `app`. You should note that any middleware and API routes should probably come before the `taunusExpress` invocation. You'll probably be using a catch-all view route that renders a _"Not Found"_ view, blocking any routing beyond that route.
+    All `taunus-express` really does is add a bunch of routes to your Express `app`. You should note that any middleware and API routes should probably come before the `taunusExpress` invocation. You'll probably be using a catch-all view route that renders a _"Not Found"_ view, blocking any routing beyond that route.
 
     The `options` object passed to `taunusExpress` let's you configure Taunus. Instead of discussing every single configuration option you could set here, let's discuss what matters: the _required configuration_. There's two options that you must set if you want your Taunus application to make any sense.
 
-    - `routes`, an array of view routes
-    - `layout`, a function that takes a single `model` argument and returns an entire HTML document
+    - `layout` should be a function that takes a single `model` argument and returns an entire HTML document
+    - `routes` should be an array of view routes
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Creating a layout
+
+    Let's also create a layout. For the purposes of making our way through this guide, it'll just be a plain JavaScript function.
+
+    ```shell
+    touch layout.js
+    ```
+
+    Note that the `partial` property in the `model` _(as seen below)_ is created on the fly after rendering partial views. The layout function we'll be using here effectively means _"there is no layout, just render the partials"_.
+
+    ```js
+    'use strict';
+
+    module.exports = function (model) {
+      return model.partial;
+    };
+    ```
+
+    Of course, if you were developing a real application, then you probably wouldn't want to write views as JavaScript functions as that's unproductive, confusing, and hard to maintain. What you could do instead, is use a view-rendering engine that allows you to compile your view templates into JavaScript functions.
+
+    - [Mustache][10] is a templating engine that can compile your views into plain functions, using a syntax that's minimally different from HTML
+    - [Jade][11] is another option, and it has a terse syntax where spacing matters but there's no closing tags
+    - There's many more alternatives like [Mozilla's Nunjucks][12], [Handlebars][13], and [EJS][14].
+
+    Remember to add the `layout` under the `options` object passed to `taunusExpress`!
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      layout: require('./layout')
+    };
+
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    You'll find tools related to view templating in the [complementary modules section][15]. If you don't provide a `layout` property at all, Taunus will render your model in a response by wrapping it in `<pre>` and `<code>` tags, which may aid you when getting started.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Your first route
 
     Routes need to be placed in its own dedicated module, so that you can reuse it later on **when setting up client-side routing**. Let's create that module and add a route to it.
 
@@ -80,23 +154,224 @@ section.ly-section.md-markdown
     ];
     ```
 
-    Each item in the exported array is a route. In this case, we only have the `/` route with the `home/index` action. Taunus follows the well known [convention over configuration pattern][8], which made [Ruby on Rails][9] famous. Maybe one day Taunus will be famous too.
+    Each item in the exported array is a route. In this case, we only have the `/` route with the `home/index` action. Taunus follows the well known [convention over configuration pattern][8], which made [Ruby on Rails][9] famous. _Maybe one day Taunus will be famous too!_ By convention, Taunus will assume that the `home/index` action uses the `home/index` controller and renders the `home/index` view. Of course, _all of that can be changed using configuration_.
 
-    Let's also create a layout. For the purposes of making our way through this guide, it'll just be a plain JavaScript function.
-
-    ```shell
-    touch layout.js
-    ```
+    Time to go back to `app.js` and update the `options` object.
 
     ```js
     'use strict';
 
-    module.exports = function (model) {
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      layout: require('./layout'),
+      routes: require('./routes')
+    };
 
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    It's important to know that if you omit the creation of a controller then Taunus will skip that step, and render the view passing it whatever the default model is _(more on that later, but it defaults to `{}`)_.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using Jade as your view engine
+
+    Let's go ahead and use Jade as the view-rendering engine of choice for our views.
+
+    ```shell
+    touch views/home/index.jade
+    ```
+
+    Since we're just getting started, the view will just have some basic static content, and that's it.
+
+    ```jade
+    p Hello Taunus!
+    ```
+
+    Next you'll want to compile the view into a function. To do that you can use [jadum][16], a specialized Jade compiler that plays well with Taunus by being aware of `require` statements, and thus saving bytes when it comes to client-side rendering. Let's install it globally, for the sake of this exercise _(you should install it locally when you're developing a real application)_.
+
+    ```shell
+    npm install jadum -g
+    ```
+
+    To compile every view in the `views` directory into functions that work well with Taunus, you can use the command below. The `--output` flag indicates where you want the views to be placed. We chose to use `.bin` because that's where Taunus expects your compiled views to be by default. But since Taunus follows the [convention over configuration][17] approach, you could change that if you wanted to.
+
+    ```shell
+    jadum views/** --output .bin
+    ```
+
+    Congratulations! Taunus is now operational. All that's left is for you to run the application and visit it on port `3000`.
+
+    ```shell
+    node app &
+    open http://localhost:3000
+    ```
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Throwing in a controller
+
+    Controllers are indeed optional, but an application that renders every view using the same model won't get very far. Controllers allow you to handle the request and put together the model to be used when sending a response. Contrary to what most frameworks propose, Taunus expects every action to have its own individual controller. Since Node.js makes it easy to import components, this setup helps you keep your code modular while still being able to reuse logic by sharing modules across different controllers. Let's create a controller for the `home/view` action.
+
+    ```shell
+    touch controllers/home/index.js
+    ```
+
+    The controller module should merely export a function. _Started noticing the pattern?_ The signature for the controller is the same signature as that of any other middleware passed to [Express][6] _(or any route handler passed to [Hapi][7] in the case of `taunus-hapi`)_.
+
+    As you may have noticed in the examples so far, you haven't even set a document title for your HTML pages! Turns out, there's a few model properties _(very few)_ that Taunus is aware of. One of those is the `title` property, and it'll be used to change the `document.title` in your pages when navigating through the client-side. Keep in mind that anything that's not in the `model` property won't be trasmitted to the client, and will just be accessible to the layout.
+
+    Here is our newfangled `home/index` controller. As you'll notice, it doesn't disrupt any of the typical Express experience, but merely builds upon it. When `next` is called, the Taunus view-rendering handler will kick in, and render the view using the information that was assigned to `res.viewModel`.
+
+    ```js
+    'use strict';
+
+    module.exports = function (req, res, next) {
+      res.viewModel = {
+        model: {
+          title: 'Welcome Home, Taunus!'
+        }
+      };
+      next();
     };
     ```
 
-    ...
+    Of course, relying on the client-side changes to your page in order to set the view title _wouldn't be progressive_, and thus [it would be really, _really_ bad][17]. We should update the layout to use whatever `title` has been passed to the model. In fact, let's go back to the drawing board and make the layout into a Jade template! The `!=` syntax means that whatever is in the value assigned to the element won't be escaped. That's okay because `partial` is a view where Jade escaped anything that needed escaping, but we wouldn't want HTML tags to be escaped!
+
+    ```jade
+    title=model.title
+    main!=partial
+    ```
+
+    By the way, did you know that `<html>`, `<head>`, and `<body>` are all optional in HTML 5, and that you can safely omit them in your HTML? Of course, rendering engines will still insert those elements automatically into the DOM for you! _How cool is that?_
+
+    That's it, now your view has a title. Of course, there's nothing stopping you from adding database calls to fetch bits and pieces of the model before invoking `next` to render the view.
+
+    There's also the client-side aspect of setting up Taunus. Let's set it up and see how it opens up our possibilities.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # Taunus in the client
+
+    You already know how to set up the basics for server-side rendering, and you know that you should [check out the API documentation][18] to get a more thorough understanding of the public interface on Taunus, and what it enables you to do.
+
+    The way Taunus works on the client-side is so that once you set it up, it will hijack link clicks and use AJAX to fetch models and render those views in the client. If the JavaScript code fails to load, _or if it hasn't loaded yet due to a slow connection such as those in unstable mobile networks_, the regular link would be followed instead and no harm would be unleashed upon the human, except they would get a slightly less fancy experience.
+
+    Setting up the client-side involves a few different steps. Firstly, we'll have to compile the application's wiring _(the routes and JavaScript view functions)_ into something the browser understands. Then, you'll have to mount Taunus on the client-side, passing the wiring so that it knows which routes it should respond to, and which others it should merely ignore. Once that's out of the way, client-side routing would be set up.
+
+    As sugar coating on top of that, you may add client-side functionality using controllers. These controllers would be executed even if the view was rendered on the server-side. They can access the Taunus API directly, in case you need to navigate to another view in some way other than by having humans click on anchor tags. The API, as you'll learn, will also let you render partial views using the powerful Taunus engine, listen for events that may occur at key stages of the view-rendering process, and even intercept AJAX requests blocking them before they ever happen.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using the Taunus CLI
+
+    Taunus comes with a CLI that can be used to wire your Node.js routes and views into the client-side. The same CLI can be used to wire up the client-side controllers as well. The main reason why the Taunus CLI exists is so that you don't have to `require` every single view and controller, undoing a lot of the work that was put into code reuse. Just like we did with `jadum` earlier, we'll install the `taunus` CLI globally for the sake of exercising, but we understand that relying on globally installed modules is insufficient for production-grade applications.
+
+    ```shell
+    npm install taunus -g
+    ```
+
+    The CLI is terse in both its inputs and its outputs. If you run it without any arguments it'll print out the wiring module, and if you want to persist it you should provide the `--output` flag. In typical [convention-over-configuration][8] fashion, the CLI will default to inferring your views are located in `.bin/views` and that you want the wiring module to be placed in `.bin/wiring.js`, but you'll be able to change that if it doesn't meet your needs.
+
+    ```shell
+    taunus --output
+    ```
+
+    At this point in our example, the CLI should create a `.bin/wiring.js` file with the contents detailed below. As you can see, even if `taunus` is an automated code-generation tool, it's output is as human readable as any other module.
+
+    ```js
+    'use strict';
+
+    var templates = {
+      'home/index': require('./views/home/index.js')
+    };
+
+    var controllers = {
+    };
+
+    var routes = {
+      '/': {
+        action: 'home/index'
+      }
+    };
+
+    module.exports = {
+      templates: templates,
+      controllers: controllers,
+      routes: routes
+    };
+    ```
+
+    Note that the `controllers` object is empty because you haven't created any _client-side controllers_ yet. We created server-side controllers but those don't have any effect in the client-side, besides determining what gets sent to the client.
+
+    The CLI can be entirely ignored, you could write these definitions by yourself, but you would have to remember to update this file whenever you add, change, or remove a view, a client-side controller, or a route. Doing that would be cumbersome, and the CLI solves that problem for us at the expense of one additional build step.
+
+    During development, you can also add the `--watch` flag, which will rebuild the wiring module if a relevant file changes.
+
+    ```shell
+    taunus --output --watch
+    ```
+
+    If you're using Hapi instead of Express, you'll also need to pass in the `hapiify` transform so that routes get converted into something the client-side routing module understand.
+
+    ```shell
+    taunus --output --transform hapiify
+    ```
+
+    Now that you understand how to use the CLI or build the wiring module on your own, booting up Taunus on the client-side will be an easy thing to do!
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Booting up the client-side router
+
+    ....
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Adding functionality in a client-side controller
+
+    ....
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using the Taunus API
+
+    ....
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Caching and Prefetching
+
+    ....
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # The sky is the limit!
+
+    You're now familiar with how Taunus works on a high-level. You have covered a decent amount of ground, but you shouldn't stop there.
+
+    - Learn more about [the API Taunus has][18] to offer
+    - Go through the [performance optimization tips][25]. You may learn something new!
+    - _Familiarize yourself with the ways of progressive enhancement_
+      - Jeremy Keith enunciates ["Be progressive"][20]
+      - Christian Heilmann advocates for ["Pragmatic progressive enhancement"][26]
+      - Jake Archibald explains how ["Progressive enhancement is faster"][22]
+      - I blogged about how we should ["Stop Breaking the Web"][17]
+      - Guillermo Rauch argues for ["7 Principles of Rich Web Applications"][24]
+      - Aaron Gustafson writes ["Understanding Progressive Enhancement"][21]
+      - Orde Saunders gives his point of view in ["Progressive enhancement for fault tolerance"][23]
+    - Sift through the [complementary modules][15]. You may find something you hadn't thought of!
+
+    Also, get involved!
+
+    - Fork this repository and [send some pull requests][19] to improve these guides!
+    - See something, say something! If you detect a bug, [please create an issue][27]!
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     [1]: https://github.com/taunus/taunus-express
     [2]: https://github.com/taunus/taunus-hapi
@@ -107,3 +382,21 @@ section.ly-section.md-markdown
     [7]: http://hapijs.com
     [8]: http://en.wikipedia.org/wiki/Convention_over_configuration
     [9]: http://en.wikipedia.org/wiki/Ruby_on_Rails
+    [10]: https://github.com/janl/mustache.js
+    [11]: https://github.com/jadejs/jade
+    [12]: http://mozilla.github.io/nunjucks/
+    [13]: http://handlebarsjs.com/
+    [14]: http://www.embeddedjs.com/
+    [15]: /complements
+    [16]: https://github.com/bevacqua/jadum
+    [17]: http://ponyfoo.com/stop-breaking-the-web
+    [18]: /api
+    [19]: https://github.com/taunus/taunus.bevacqua.io/pulls
+    [20]: https://adactio.com/journal/7706
+    [21]: http://alistapart.com/article/understandingprogressiveenhancement
+    [22]: http://jakearchibald.com/2013/progressive-enhancement-is-faster/
+    [23]: https://decadecity.net/blog/2013/09/16/progressive-enhancement-for-fault-tolerance
+    [24]: http://rauchg.com/2014/7-principles-of-rich-web-applications/
+    [25]: /performance
+    [26]: http://icant.co.uk/articles/pragmatic-progressive-enhancement/
+    [27]: https://github.com/taunus/taunus/issues/new
