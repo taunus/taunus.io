@@ -32,7 +32,7 @@ var routes = {
   '/source-code': {
     ignore: true
   },
-  '/*': {
+  '/:catchall*': {
     action: 'error/not-found'
   }
 };

@@ -1,16 +1,34 @@
 'use strict';
 
-function routing (pack) {
-  pack.route({
-    method: 'GET',
-    path: '/{asset*}',
-    handler: {
-      directory: { path: '.bin/public' }
-    }
-  });
+var util = require('util');
 
+function routing (pack) {
+  favicon();
+  assets('js');
+  assets('css');
   redirection('/about', '/');
   redirection('/source-code', 'https://github.com/taunus/taunus');
+
+  function favicon () {
+    pack.route({
+      method: 'GET',
+      path: '/favicon.ico',
+      handler: { file: '.bin/public/favicon.ico' },
+      config: {
+        cache: { expiresIn: 86400000, privacy: 'public' }
+      }
+    });
+  }
+
+  function assets (type, file) {
+    pack.route({
+      method: 'GET',
+      path: util.format('/%s/{asset*}', type),
+      handler: {
+        directory: { path: '.bin/public/' + type }
+      }
+    });
+  }
 
   function redirection(from, to) {
     pack.route({
