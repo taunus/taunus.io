@@ -17,7 +17,7 @@ section.ly-section.md-markdown
       - [Using the Taunus CLI](#using-the-taunus-cli)
       - [Booting up the client-side router](#booting-up-the-client-side-router)
       - [Adding functionality in a client-side controller](#adding-functionality-in-a-client-side-controller)
-      - [Using the Taunus API](#using-the-taunus-api)
+      - [Using the client-side Taunus API](#using-the-client-side-taunus-api)
       - [Caching and Prefetching](#caching-and-prefetching)
     - [The sky is the limit!](#the-sky-is-the-limit-)
 
@@ -346,11 +346,13 @@ section.ly-section.md-markdown
     taunus.mount(main, wiring);
     ```
 
-    The mountpoint will set up the client-side Taunus router and fire the client-side view controller for the view that has been rendered in the server-side. Whenever an anchor link is clicked, Taunus will be able to hijack that click and request the model using AJAX, but only if it matches a view route (otherwise the link will behave just like any normal link).
+    The mountpoint will set up the client-side Taunus router and fire the client-side view controller for the view that has been rendered in the server-side. Whenever an anchor link is clicked, Taunus will be able to hijack that click and request the model using AJAX, but only if it matches a view route. Otherwise the link will behave just like any normal link would.
 
     By default, the mountpoint will issue an AJAX request for the view model of the server-side rendered view. This is akin to what dedicated client-side rendering frameworks such as AngularJS do, where views are only rendered after all the JavaScript has been downloaded, parsed, and executed. Except Taunus provides human-readable content faster, before the JavaScript even begins downloading, although it won't be functional until the client-side controller runs.
 
-    An alternative is to inline the view model alongside the views in a `<script type='text/taunus'>` tag, but this tends to slow down the initial response (models are _typically larger_ than the resulting views). A third strategy is that you request the model asynchronously outside of Taunus, allowing you to fetch both the view model and Taunus itself concurrently, but that's harder to set up.
+    An alternative is to inline the view model alongside the views in a `<script type='text/taunus'>` tag, but this tends to slow down the initial response (models are _typically larger_ than the resulting views).
+
+    A third strategy is that you request the model asynchronously outside of Taunus, allowing you to fetch both the view model and Taunus itself concurrently, but that's harder to set up.
 
     The three booting strategies are explained in [the API documentation][18] and further discussed in [the optimization guide][25]. For now, the default strategy _(`'auto'`)_ should suffice. It fetches the view model using an AJAX request right after Taunus loads.
 
@@ -358,19 +360,64 @@ section.ly-section.md-markdown
 
     #### Adding functionality in a client-side controller
 
-    Client-side controllers run whenever a view is
+    Client-side controllers run whenever a view is rendered, even if it's a partial. The controller is passed the `model`, containing the model that was used to render the view; the `route`, broken down into its components; and the `container`, which is whatever DOM element the view was rendered into.
+
+    These controllers are entirely optional, which makes sense since we're progressively enhancing the application: it might not even be necessary! Let's add some client-side functionality to the example we've been building.
+
+    ```shell
+    touch client/js/controllers/home/index.js
+    ```
+
+    Guess what? The controller should be a module which exports a function. That function will be called whenever the view is rendered. For the sake of simplicity we'll just print the action and the model to the console. If there's one place where you'd want to enhance the experience, client-side controllers are where you want to put your code.
+
+    ```js
+    'use strict';
+
+    module.exports = function (model, route, container) {
+      console.log('Rendered view %s using model %s', route.action, model);
+    };
+    ```
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    #### Using the Taunus API
+    #### Using the client-side Taunus API
 
-    ....
+    Taunus does provide [a thin API][18] in the client-side. Usage of that API belongs mostly inside the body of client-side view controllers, but there's a few methods you can take advantage of on a global scale as well.
+
+    Taunus can notify you whenever important events occur.
+
+    Event            | Arguments               | Description
+    -----------------|-------------------------|------------------------------------
+    `'start'`        | `container, model`      | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
+    `'render'`       | `container, model`      | A view has just been rendered and its client-side controller is about to be invoked
+    `'fetch.start'`  |  `route, context`       | Emitted whenever an XHR request starts.
+    `'fetch.done'`   |  `route, context, data` | Emitted whenever an XHR request ends successfully.
+    `'fetch.abort'`  |  `route, context`       | Emitted whenever an XHR request is purposely aborted.
+    `'fetch.error'`  |  `route, context, err`  | Emitted whenever an XHR request results in an HTTP error.
+
+    Besides events, there's a couple more methods you can use. The `taunus.navigate` method allows you to navigate to a URL without the need for a human to click on an anchor link. Then there's `taunus.partial`, and that allows you to render any partial view on a DOM element of your choosing, and it'll then invoke its controller. You'll need to come up with the model yourself, though.
+
+    Astonishingly, the API is further documented in [the API documentation][18].
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     #### Caching and Prefetching
 
-    ....
+    [Performance][25] plays an important role in Taunus. That's why the you can perform caching and prefetching on the client-side just by turning on a pair of flags. But what do these flags do exactly?
+
+    When turned on, by passing `{ cache: true }` as the third parameter for `taunus.mount`, the caching layer will make sure that responses are kept around for `15` seconds. Whenever a route needs a model in order to render a view, it'll first ask the caching layer for a fresh copy. If the caching layer doesn't have a copy, or if that copy is stale _(in this case, older than `15` seconds)_, then an AJAX request will be issued to the server. Of course, the duration is configurable. If you want to use a value other than the default, you should set `cache` to a number in seconds instead of just `true`.
+
+    Since Taunus understands that not every view operates under the same constraints, you're also able to set a `cache` freshness duration directly in your routes. The `cache` property in routes has precedence over the default value.
+
+    There's currently two caching stores: a raw in-memory store, and an [IndexedDB][28] store. IndexedDB is an embedded database solution, and you can think of it like an asynchronous version of `localStorage`. It has [surprisingly broad browser support][29], and in the cases where it's not supported then caching is done solely in-memory.
+
+    The prefetching mechanism is an interesting spin-off of caching, and it requires caching to be enabled in order to work. Whenever humans hover over a link, or whenever they put their finger on one of them _(the `touchstart` event)_, the prefetcher will issue an AJAX request for the view model for that link.
+
+    If the request ends successfully then the response will be cached in the same way any other view would be cached. If the human hovers over another link while the previous one is still being prefetched, then the old request is aborted, as not to drain their _(possibly limited)_ Internet connection bandwidth.
+
+    If the human clicks on the link before prefetching is completed, he'll navigate to the view as soon as prefetching ends, rather than firing another request. This helps Taunus save precious milliseconds when dealing with latency-sensitive operations.
+
+    Turning prefetching on is simply a matter of setting `prefetch` to `true` in the options passed to `taunus.mount`. For additional insights into the performance improvements Taunus can offer, head over to the [Performance Optimizations][25] guide.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -424,3 +471,5 @@ section.ly-section.md-markdown
     [25]: /performance
     [26]: http://icant.co.uk/articles/pragmatic-progressive-enhancement/
     [27]: https://github.com/taunus/taunus/issues/new
+    [28]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+    [29]: http://caniuse.com/#feat=indexeddb

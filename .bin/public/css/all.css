@@ -505,13 +505,16 @@ a:hover {
   text-shadow: 0 1px rgba(0,0,0,0.2);
 }
 thead th {
-  background-color: #7fc5a8;
+  background-color: #95cfb7;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: 'Unica One', 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
 }
 tbody tr:nth-child(even) {
-  background-color: #86c8ad;
+  background-color: rgba(149,207,183,0.5);
 }
 tbody tr:nth-child(odd) {
-  background-color: #8eccb2;
+  background-color: rgba(149,207,183,0.7);
 }
 tr {
   border-width: 3px;
