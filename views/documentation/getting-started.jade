@@ -9,8 +9,8 @@ section.ly-section.md-markdown
     - [How it works](#how-it-works)
     - [Installing Taunus](#installing-taunus)
     - [Setting up the server-side](#setting-up-the-server-side)
-      - [Creating a layout](#creating-a-layout)
       - [Your first route](#your-first-route)
+      - [Creating a layout](#creating-a-layout)
       - [Using Jade as your view engine](#using-jade-as-your-view-engine)
       - [Throwing in a controller](#throwing-in-a-controller)
     - [Taunus in the client](#taunus-in-the-client)
@@ -66,7 +66,7 @@ section.ly-section.md-markdown
     npm install taunus taunus-express express --save
     ```
 
-    ![Terminal Output][30]
+    ![Screenshot with `npm init` output][30]
 
     Let's build our application step-by-step, and I'll walk you through them as we go along. First of all, you'll need the famous `app.js` file.
 
@@ -91,10 +91,57 @@ section.ly-section.md-markdown
 
     All `taunus-express` really does is add a bunch of routes to your Express `app`. You should note that any middleware and API routes should probably come before the `taunusExpress` invocation. You'll probably be using a catch-all view route that renders a _"Not Found"_ view, blocking any routing beyond that route.
 
+    If you were to run the application now you would get a friendly remined from Taunus letting you know that you forgot to declare any view routes. Silly you!
+
+    ```shell
+    node app
+    ```
+
+    ![Screenshot with `node app` output][31]
+
     The `options` object passed to `taunusExpress` let's you configure Taunus. Instead of discussing every single configuration option you could set here, let's discuss what matters: the _required configuration_. There's two options that you must set if you want your Taunus application to make any sense.
 
-    - `layout` should be a function that takes a single `model` argument and returns an entire HTML document
     - `routes` should be an array of view routes
+    - `layout` should be a function that takes a single `model` argument and returns an entire HTML document
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Your first route
+
+    Routes need to be placed in its own dedicated module, so that you can reuse it later on **when setting up client-side routing**. Let's create that module and add a route to it.
+
+    ```shell
+    touch routes.js
+    ```
+
+    ```js
+    'use strict';
+
+    module.exports = [
+      { route: '/', action: 'home/index' }
+    ];
+    ```
+
+    Each item in the exported array is a route. In this case, we only have the `/` route with the `home/index` action. Taunus follows the well known [convention over configuration pattern][8], which made [Ruby on Rails][9] famous. _Maybe one day Taunus will be famous too!_ By convention, Taunus will assume that the `home/index` action uses the `home/index` controller and renders the `home/index` view. Of course, _all of that can be changed using configuration_.
+
+    Time to go back to `app.js` and update the `options` object.
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      routes: require('./routes')
+    };
+
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    It's important to know that if you omit the creation of a controller then Taunus will skip that step, and render the view passing it whatever the default model is _(more on that [in the API documentation][18], but it defaults to `{}`)_.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -132,6 +179,7 @@ section.ly-section.md-markdown
     var express = require('express');
     var app = express();
     var options = {
+      routes: require('./routes'),
       layout: require('./layout')
     };
 
@@ -140,46 +188,6 @@ section.ly-section.md-markdown
     ```
 
     You'll find tools related to view templating in the [complementary modules section][15]. If you don't provide a `layout` property at all, Taunus will render your model in a response by wrapping it in `<pre>` and `<code>` tags, which may aid you when getting started.
-
-    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
-
-    #### Your first route
-
-    Routes need to be placed in its own dedicated module, so that you can reuse it later on **when setting up client-side routing**. Let's create that module and add a route to it.
-
-    ```shell
-    touch routes.js
-    ```
-
-    ```js
-    'use strict';
-
-    module.exports = [
-      { route: '/', action: 'home/index' }
-    ];
-    ```
-
-    Each item in the exported array is a route. In this case, we only have the `/` route with the `home/index` action. Taunus follows the well known [convention over configuration pattern][8], which made [Ruby on Rails][9] famous. _Maybe one day Taunus will be famous too!_ By convention, Taunus will assume that the `home/index` action uses the `home/index` controller and renders the `home/index` view. Of course, _all of that can be changed using configuration_.
-
-    Time to go back to `app.js` and update the `options` object.
-
-    ```js
-    'use strict';
-
-    var taunus = require('taunus');
-    var taunusExpress = require('taunus-express');
-    var express = require('express');
-    var app = express();
-    var options = {
-      layout: require('./layout'),
-      routes: require('./routes')
-    };
-
-    taunusExpress(taunus, app, options);
-    app.listen(3000);
-    ```
-
-    It's important to know that if you omit the creation of a controller then Taunus will skip that step, and render the view passing it whatever the default model is _(more on that later, but it defaults to `{}`)_.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -479,3 +487,4 @@ section.ly-section.md-markdown
     [28]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
     [29]: http://caniuse.com/#feat=indexeddb
     [30]: http://i.imgur.com/4P8vNe9.png
+    [31]: http://i.imgur.com/n8mH4mN.png
