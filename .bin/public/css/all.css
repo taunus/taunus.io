@@ -476,9 +476,16 @@ input[type='submit'] {
 a {
   color: #ff823a;
   font-weight: bold;
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
 }
 a:hover {
   text-decoration: underline;
+  background-color: #f2f26f;
+  color: #95cfb7;
 }
 ::-webkit-input-placeholder {
   color: #999;
@@ -702,6 +709,9 @@ tr {
   border-top: 5px double #95cfb7;
   border-bottom: 5px double #95cfb7;
 }
+.ly-title:hover {
+  color: #444;
+}
 .ly-subheading {
   color: #95cfb7;
   text-transform: none;
@@ -727,15 +737,6 @@ tr {
 .nv-item a {
   display: block;
   padding: 10px;
-  -webkit-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  -ms-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
-}
-.nv-item a:hover {
-  background-color: #f2f26f;
-  color: #95cfb7;
 }
 @media only screen and (min-width: 768px) {
   .nv-item {
@@ -758,17 +759,17 @@ tr {
   background-color: #f8f8f8;
 }
 .md-markdown blockquote {
+  margin: 10px 0;
   position: relative;
-  margin: 0;
   padding: 12px 12px 12px 52px;
-  background-color: rgba(233,44,108,0.05);
+  background-color: rgba(255,130,58,0.1);
 }
 .md-markdown blockquote:before {
   position: absolute;
-  left: 12px;
+  top: 20px;
+  left: 15px;
   content: '“';
-  color: #e92c6c;
-  text-shadow: 0 1px c-strong;
+  color: #f04155;
   font-size: 65px;
   font-weight: 700;
   line-height: 40px;

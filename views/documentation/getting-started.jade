@@ -1,3 +1,109 @@
 section.ly-section.md-markdown
   :markdown
-    Foo
+    # Getting Started
+
+    Taunus is a shared-rendering MVC engine for Node.js, and it's _up to you how to use it_. In fact, it might be a good idea for you to **set up just the server-side aspect first**, as that'll teach you how it works even when JavaScript never gets to the client.
+
+    # How It works
+
+    Taunus follows a simple but **proven** set of rules.
+
+    - Define a `function(model)` for each your views
+    - Put these views in both the server and the client
+    - Define routes for your application
+    - Put those routes in both the server and the client
+    - Ensure route matches work the same way on both ends
+    - Create server-side controllers that yield the model for your views
+    - Create client-side controllers if you need to add client-side functionality to a particular view
+    - For the first request, always render views on the server-side
+    - When rendering a view on the server-side, include the full layout as well!
+    - Once the client-side code kicks in, **hijack link clicks** and make AJAX requests instead
+    - When you get the JSON model back, render views on the client-side
+    - If the `history` API is unavailable, fall back to good old request-response. **Don't confuse your humans with obscure hash routers!**
+
+    # Installing Taunus
+
+    First off, you'll need to choose a HTTP server framework for your application. At the moment Taunus supports only a couple of HTTP frameworks, but more may be added if they are popular enough.
+
+    - [Express][6], through [taunus-express][1]
+    - [Hapi][7], through [taunus-hapi][2] and the [hapiify][3] transform
+
+    > If you're more of a _"rummage through someone else's code"_ type of developer, you may feel comfortable [going through this website's source code][4], which uses the [Hapi][7] flavor of Taunus. Alternatively you can look at the source code for [ponyfoo.com][5], which is **a more advanced use-case** under the [Express][6] flavor. Or, you could just keep on reading this page, that's okay too.
+
+    Once you've settled for either [Express][6] or [Hapi][7] you'll be able to proceed. For the purposes of this guide, we'll use [Express][6]. Switching between one of the different HTTP flavors is strikingly easy, though.
+
+    Naturally, you'll need to install all of the following modules from `npm` to get started.
+
+    ```shell
+    npm install taunus taunus-express express --save
+    ```
+
+    Let's build our application step-by-step, and I'll walk you through them as we go along. First of all, you'll need the famous `app.js` file.
+
+    ```shell
+    touch app.js
+    ```
+
+    It's probably a good idea to put something in your `app.js` file, let's do that now.
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {};
+
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    All that `taunus-express` really does is add a bunch of routes to your Express `app`. You should note that any middleware and API routes should probably come before the `taunusExpress` invocation. You'll probably be using a catch-all view route that renders a _"Not Found"_ view, blocking any routing beyond that route.
+
+    The `options` object passed to `taunusExpress` let's you configure Taunus. Instead of discussing every single configuration option you could set here, let's discuss what matters: the _required configuration_. There's two options that you must set if you want your Taunus application to make any sense.
+
+    - `routes`, an array of view routes
+    - `layout`, a function that takes a single `model` argument and returns an entire HTML document
+
+    Routes need to be placed in its own dedicated module, so that you can reuse it later on **when setting up client-side routing**. Let's create that module and add a route to it.
+
+    ```shell
+    touch routes.js
+    ```
+
+    ```js
+    'use strict';
+
+    module.exports = [
+      { route: '/', action: 'home/index' }
+    ];
+    ```
+
+    Each item in the exported array is a route. In this case, we only have the `/` route with the `home/index` action. Taunus follows the well known [convention over configuration pattern][8], which made [Ruby on Rails][9] famous. Maybe one day Taunus will be famous too.
+
+    Let's also create a layout. For the purposes of making our way through this guide, it'll just be a plain JavaScript function.
+
+    ```shell
+    touch layout.js
+    ```
+
+    ```js
+    'use strict';
+
+    module.exports = function (model) {
+
+    };
+    ```
+
+    ...
+
+    [1]: https://github.com/taunus/taunus-express
+    [2]: https://github.com/taunus/taunus-hapi
+    [3]: https://github.com/taunus/hapiify
+    [4]: https://github.com/taunus/taunus.bevacqua.io
+    [5]: https://github.com/ponyfoo/ponyfoo
+    [6]: http://expressjs.com
+    [7]: http://hapijs.com
+    [8]: http://en.wikipedia.org/wiki/Convention_over_configuration
+    [9]: http://en.wikipedia.org/wiki/Ruby_on_Rails
