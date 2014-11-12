@@ -30,11 +30,16 @@ section.ly-section.md-markdown
       - The [`--standalone`](#-standalone-) flag
     - A [client-side API](#client-side-api) that deals with client-side rendering
       - The [`taunus.mount`](#-taunus-mount-container-wiring-options-) method
+        - Using the [`auto`](#using-the-auto-strategy) strategy
+        - Using the [`inline`](#using-the-inline-strategy) strategy
+        - Using the [`manual`](#using-the-manual-strategy) strategy
+        - [Caching](#caching)
+        - [Prefetching](#prefetching)
       - The [`taunus.on`](#-taunus-on-type-fn-) method
       - The [`taunus.once`](#-taunus-once-type-fn-) method
       - The [`taunus.off`](#-taunus-off-type-fn-) method
       - The [`taunus.intercept`](#-taunus-intercept-action-fn-) method
-      - The [`taunus.partial`](#-taunus-partial-container-action-model-route-) method
+      - The [`taunus.partial`](#-taunus-partial-container-action-model-) method
       - The [`taunus.navigate`](#-taunus-navigate-url-) method
       - The [`taunus.state`](#-taunus-route-url-) property
       - The [`taunus.route`](#-taunus-state-) method
@@ -334,41 +339,210 @@ section.ly-section.md-markdown
 
     # Client-side API
 
+    Just like the server-side, everything in the client-side begins at the mountpoint. Once the application is mounted, anchor links will be hijacked and the client-side router will take over view rendering. Client-side controllers are executed whenever a view is rendered.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.mount(container, wiring, options)`
+    ## `taunus.mount(container, wiring, options?)`
+
+    The mountpoint takes a root container, the wiring module, and an options parameter. The `container` is where client-side-rendered views will be placed, by replacing whatever HTML contents already exist. You can pass in the `wiring` module exactly as built by the CLI, and no further configuration is necessary.
+
+    When the mountpoint executes, Taunus will configure its internal state, _set up the client-side router_, run the client-side controller for the server-side rendered view, and start hijacking links.
+
+    As an example, consider a browser makes a `GET` request for `/articles/the-fox` for the first time. Once `taunus.mount(container, wiring)` is invoked on the client-side, several things would happen in the order listed below.
+
+    - Taunus sets up the client-side view routing engine
+    - If enabled _(via `options`)_, the caching engine is configured
+    - Taunus obtains the view model _(more on this later)_
+    - When a view model is obtained, the `'start'` event is emitted
+    - Anchor links start being monitored for clicks _(at this point your application becomes a [SPA][13])_
+    - The `articles/article` client-side controller is executed
+
+    That's quite a bit of functionality, but if you think about it, most other frameworks also render the view at this point, _rather than on the server-side!_
+
+    In order to better understand the process, I'll walk you through the `options` parameter.
+
+    First off, the `bootstrap` option determines the strategy used to pull the view model of the server-side rendered view into the client-side. There are three possible strategies available: `auto` _(the default strategy)_, `inline`, or `manual`. The `auto` strategy involves the least work, which is why it's the default.
+
+    - `auto` will make an AJAX request for the view model
+    - `inline` expects you to place the model into a `<script type='text/taunus'>` tag
+    - `manual` expects you to get the view model however you want to, and then let Taunus know when it's ready
+
+    Let's go into detail about each of these strategies.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using the `auto` strategy
+
+    The `auto` strategy means that Taunus will make use of an AJAX request to obtain the view model. _You don't have to do anything else_ and this is the default strategy. This is the **most convenient strategy, but also the slowest** one.
+
+    It's slow because the view model won't be requested until the bulk of your JavaScript code has been downloaded, parsed, executed, and `taunus.mount` is invoked.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using the `inline` strategy
+
+    The `inline` strategy expects you to add a `data-taunus` attribute on the `container` element. This attribute must be equal to the `id` attribute of a `<script>` tag containing the serialized view model.
+
+    ```jade
+    div(data-taunus='model')!=partial
+    script(type='text/taunus', data-taunus='model')=JSON.stringify(model)
+    ```
+
+    Pay special attention to the fact that the model is not only made into a JSON string, _but also HTML encoded by Jade_. When Taunus extracts the model from the `<script>` tag it'll unescape it, and then parse it as JSON.
+
+    This strategy is also fairly convenient to set up, but it involves a little more work. It might be worthwhile to use in cases where models are small, but it will slow down server-side view rendering, as the model is inlined alongside the HTML.
+
+    That means that the content you are supposed to be prioritizing is going to take longer to get to your humans, but once they get the HTML, this strategy will execute the client-side controller almost immediately.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Using the `manual` strategy
+
+    The `manual` strategy is the most involved of the three, but also the most performant. In this strategy you're supposed to add the following _(seemingly pointless)_ snippet of code in a `<script>` other than the one that's pulling down Taunus, so that they are pulled concurrently rather than serially.
+
+    ```js
+    window.taunusReady = function (model) {
+      window.taunusReady = model;
+    };
+    ```
+
+    Once you somehow get your hands on the view model, you should invoke `taunusReady(model)`. Considering you'll be pulling both the view model and Taunus at the same time, a number of different scenarios may play out.
+
+    - The view model is loaded first, you call `taunusReady(model)` and wait for Taunus to take the model object and boot the application as soon as `taunus.mount` is executed
+    - Taunus loads first and `taunus.mount` is called first. In this case, Taunus will replace `window.taunusReady` with a special `boot` method. When the view model finishes loading, you call `taunusReady(model)` and the application finishes booting
+
+    > If this sounds a little mind-bending it's because it is. It's not designed to be pretty, but merely to be performant.
+
+    Now that we've addressed the awkward bits, let's cover the _"somehow get your hands on the view model"_ aspect. My preferred method is using JSONP, as it's able to deliver the smallest snippet possible, and it can take advantage of server-side caching. Considering you'll probably want this to be an inline script, keeping it small is important.
+
+    The good news is that the server-side supports JSONP out the box. Here's a snippet of code you could use to pull down the view model and boot Taunus up as soon as both operations are ready.
+
+    ```js
+    function inject (url) {
+      var script = document.createElement('script');
+      script.src = url;
+      document.body.appendChild(script);
+    }
+
+    function injector () {
+      var search = location.search;
+      var searchQuery = search ? '&' + search.substr(1) : '';
+      var searchJson = '?json&callback=taunusReady' + searchQuery;
+      inject(location.pathname + searchJson);
+    }
+
+    window.taunusReady = function (model) {
+      window.taunusReady = model;
+    };
+
+    injector();
+    ```
+
+    As mentioned earlier, this approach involves getting your hands dirtier but it pays off by being the fastest of the three.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Caching
+
+    The client-side in Taunus supports caching in-memory and using the embedded IndexedDB system by merely turning on the `cache` flag in the options passed to `taunus.mount` on the client-side.
+
+    If you set `cache` to `true` then cached items will be considered _"fresh" (valid copies of the original)_ for **15 seconds**. You can also set `cache` to a number, and that number of seconds will be used as the default instead.
+
+    Caching can also be tweaked on individual routes. For instance, you could set `{ cache: true }` when mounting Taunus and then have `{ cache: 3600 }` on a route that you want to cache for a longer period of time.
+
+    The caching layer is _seamlessly integrated_ into Taunus, meaning that any views rendered by Taunus will be cached according to these caching rules. Keep in mind, however, that persistence at the client-side caching layer will only be possible in [browsers that support IndexedDB][14]. In the case of browsers that don't support IndexedDB, Taunus will use an in-memory cache, which will be wiped out whenever the human decides to close the tab in their browser.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Prefetching
+
+    If caching is enabled, the next logical step is prefetching. This is enabled just by adding `prefetch: true` to the options passed to `taunus.mount`. The prefetching feature will fire for any anchor link that's trips over a `mouseover` or a `touchstart` event. If a route matches the URL in the `href`, an AJAX request will prefetch the view and cache its contents, improving perceived performance.
+
+    When links are clicked before prefetching finishes, they'll wait on the prefetcher to finish before immediately switching to the view, effectively cutting down the response time. If the link was already prefetched or otherwise cached, the view will be loaded immediately. If the human hovers over a link and another one was already being prefetched, then that one is aborted. This prevents prefetching from draining the bandwidth on clients with limited or intermittent connectivity.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.on(type, fn)`
 
+    Taunus emits a series of events during its lifecycle, and `taunus.on` is the way you can tune in and listen for these events using a subscription function `fn`.
+
+    Event            | Arguments               | Description
+    -----------------|-------------------------|------------------------------------
+    `'start'`        | `container, model`      | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
+    `'render'`       | `container, model`      | A view has just been rendered and its client-side controller is about to be invoked
+    `'fetch.start'`  |  `route, context`       | Emitted whenever an XHR request starts.
+    `'fetch.done'`   |  `route, context, data` | Emitted whenever an XHR request ends successfully.
+    `'fetch.abort'`  |  `route, context`       | Emitted whenever an XHR request is purposely aborted.
+    `'fetch.error'`  |  `route, context, err`  | Emitted whenever an XHR request results in an HTTP error.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.once(type, fn)`
+
+    This method is equivalent to [`taunus.on`](#-taunus-on-type-fn-), except the event listeners will be used once and then it'll be discarded.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.off(type, fn)`
 
-    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
-
-    ## `taunus.intercept(action, fn)`
+    Using this method you can remove any event listeners that were previously added using `.on` or `.once`. You must provide the type of event you want to remove and a reference to the event listener function that was originally used when calling `.on` or `.once`.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.partial(container, action, model, route)`
+    ## `taunus.intercept(action?, fn)`
+
+    This method can be used to anticipate model requests, before they ever make it into XHR requests. You can add interceptors for specific actions, which would be triggered only if the request matches the specified `action`. You can also add global interceptors by omitting the `action` parameter, or setting it to `*`.
+
+    An interceptor function will receive an `event` parameter, containing a few different properties.
+
+    - `url` contains the URL that needs a view model
+    - `route` contains the full route object as you'd get from [`taunus.route(url)`](#-taunus-route-url-)
+    - `parts` is just a shortcut for `route.parts`
+    - `preventDefault(model)` allows you to suppress the need for an AJAX request, commanding Taunus to use the model you've provided instead
+    - `defaultPrevented` tells you if some other handler has prevented the default behavior
+    - `canPreventDefault` tells you if invoking `event.preventDefault` will have any effect
+    - `model` starts as `null`, and it can later become the model passed to `preventDefault`
+
+    Interceptors are asynchronous, but if an interceptor spends longer than 200ms it'll be short-circuited and calling `event.preventDefault` past that point won't have any effect.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.partial(container, action, model)`
+
+    This method provides you with access to the view-rendering engine of Taunus. You can use it to render the `action` view into the `container` DOM element, using the specified `model`. Once the view is rendered, the `render` event will be fired _(with `container, model` as arguments)_ and the client-side controller for that view will be executed.
+
+    While `taunus.partial` takes a `route` as the fourth parameter, you should omit that since it's used for internal purposes only.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.navigate(url)`
 
+    Whenever you want to navigate to a URL, say when an AJAX call finishes after a button click, you can use `taunus.navigate` passing it a plain URL.
+
+    If `taunus.navigate(url)` is called with an `url` that doesn't match any client-side route, then the user will be redirected via `location.href`.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.route(url)`
 
+    This convenience method allows you to break down a URL into its individual components. This method shouldn't be needed during normal usage of Taunus, but it's useful when debugging your routing tables.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.state`
+
+    This is an internal state variable, and it contains a lot of useful debugging information.
+
+    - `container` is the DOM element passed to `taunus.mount`
+    - `controllers` are all the controllers, as defined in the wiring module
+    - `templates` are all the templates, as defined in the wiring module
+    - `routes` are all the routes, as defined in the wiring module
+    - `prefetch` exposes whether prefetching is turned on
+    - `cache` exposes whether caching is enabled
+    - `model` is a reference to the model used to render the current view
+
+    Of course, your not supposed to meddle with it, so be a good citizen and just inspect its values!
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -410,3 +584,5 @@ section.ly-section.md-markdown
     [10]: https://github.com/umdjs/umd
     [11]: http://browserify.org
     [12]: http://en.wikipedia.org/wiki/Convention_over_configuration
+    [13]: http://en.wikipedia.org/wiki/Single-page_application
+    [14]: http://caniuse.com/#feat=indexeddb
