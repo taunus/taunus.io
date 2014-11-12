@@ -767,7 +767,7 @@ tr {
   margin: 0 2px;
 }
 .md-markdown code {
-  display: inline-block;
+  display: inline;
   padding: 3px 4px;
   color: #333;
 }

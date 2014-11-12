@@ -218,6 +218,7 @@ section.ly-section.md-markdown
     Let's go ahead and use Jade as the view-rendering engine of choice for our views.
 
     ```shell
+    mkdir -p views/home
     touch views/home/index.jade
     ```
 
@@ -239,20 +240,25 @@ section.ly-section.md-markdown
     jadum views/** --output .bin
     ```
 
-    Congratulations! Taunus is now operational. All that's left is for you to run the application and visit it on port `3000`.
+    Congratulations! Your first view is now operational and built using a full-fledged templating engine! All that's left is for you to run the application and visit it on port `3000`.
 
     ```shell
     node app &
     open http://localhost:3000
     ```
 
+    ![Screenshot with `node app` output][34]
+
+    Granted, you should _probably_ move the layout into a Jade _(any view engine will do)_ template as well.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     #### Throwing in a controller
 
-    Controllers are indeed optional, but an application that renders every view using the same model won't get very far. Controllers allow you to handle the request and put together the model to be used when sending a response. Contrary to what most frameworks propose, Taunus expects every action to have its own individual controller. Since Node.js makes it easy to import components, this setup helps you keep your code modular while still being able to reuse logic by sharing modules across different controllers. Let's create a controller for the `home/view` action.
+    Controllers are indeed optional, but an application that renders every view using the same model won't get you very far. Controllers allow you to handle the request and put together the model to be used when sending a response. Contrary to what most frameworks propose, Taunus expects every action to have its own individual controller. Since Node.js makes it easy to import components, this setup helps you keep your code modular while still being able to reuse logic by sharing modules across different controllers. Let's create a controller for the `home/view` action.
 
     ```shell
+    mkdir -p controllers/home
     touch controllers/home/index.js
     ```
 
@@ -275,7 +281,33 @@ section.ly-section.md-markdown
     };
     ```
 
-    Of course, relying on the client-side changes to your page in order to set the view title _wouldn't be progressive_, and thus [it would be really, _really_ bad][17]. We should update the layout to use whatever `title` has been passed to the model. In fact, let's go back to the drawing board and make the layout into a Jade template! The `!=` syntax means that whatever is in the value assigned to the element won't be escaped. That's okay because `partial` is a view where Jade escaped anything that needed escaping, but we wouldn't want HTML tags to be escaped!
+    Of course, relying on the client-side changes to your page in order to set the view title _wouldn't be progressive_, and thus [it would be really, _really_ bad][17]. We should update the layout to use whatever `title` has been passed to the model. In fact, let's go back to the drawing board and make the layout into a Jade template!
+
+    ```shell
+    rm layout.js
+    touch views/layout.jade
+    jadum views/** --output .bin
+    ```
+
+    You should also remember to update the `app.js` module once again!
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      routes: require('./routes'),
+      layout: require('./.bin/views/layout')
+    };
+
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    The `!=` syntax below means that whatever is in the value assigned to the element won't be escaped. That's okay because `partial` is a view where Jade escaped anything that needed escaping, but we wouldn't want HTML tags to be escaped!
 
     ```jade
     title=model.title
@@ -284,9 +316,19 @@ section.ly-section.md-markdown
 
     By the way, did you know that `<html>`, `<head>`, and `<body>` are all optional in HTML 5, and that you can safely omit them in your HTML? Of course, rendering engines will still insert those elements automatically into the DOM for you! _How cool is that?_
 
+    ```shell
+    node app
+    ```
+
+    ![Screenshot with `node app` output][35]
+
+    You can now visit `localhost:3000` with your favorite web browser and you'll notice that the view renders as you'd expect. The title will be properly set, and a `<main>` element will have the contents of your view.
+
+    ![Screenshot with application running on Google Chrome][36]
+
     That's it, now your view has a title. Of course, there's nothing stopping you from adding database calls to fetch bits and pieces of the model before invoking `next` to render the view.
 
-    There's also the client-side aspect of setting up Taunus. Let's set it up and see how it opens up our possibilities.
+    Then there's also the client-side aspect of setting up Taunus. Let's set it up and see how it opens up our possibilities.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -512,3 +554,6 @@ section.ly-section.md-markdown
     [31]: http://i.imgur.com/n8mH4mN.png
     [32]: http://i.imgur.com/08lnCec.png
     [33]: http://i.imgur.com/wUbnCyk.png
+    [34]: http://i.imgur.com/zjaJYCq.png
+    [35]: http://i.imgur.com/NvEWx9z.png
+    [36]: http://i.imgur.com/LgZRFn5.png
