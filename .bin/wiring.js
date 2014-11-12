@@ -11,6 +11,7 @@ var templates = {
 };
 
 var controllers = {
+  'documentation/about': require('../client/js/controllers/documentation/about.js')
 };
 
 var routes = {

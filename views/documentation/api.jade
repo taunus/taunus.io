@@ -9,43 +9,44 @@ section.ly-section.md-markdown
     # Table of Contents
 
     - A [server-side API](#server-side-api) that deals with server-side rendering
-      - The `taunus.mount` method
-        - The `options` object
-          - `layout`
-          - `routes`
-          - `getDefaultViewModel`
-          - `plaintext`
-          - `resolvers`
-        - The `addRoute` method
-      - The `taunus.render` method
-      - The `taunus.rebuildDefaultViewModel` method
+      - The [`taunus.mount`](#-taunus-mount-addroute-options-) method
+        - Its [`options`](#the-options-object) argument
+          - [`layout`](#-options-layout-)
+          - [`routes`](#-options-routes-)
+          - [`getDefaultViewModel`](#-options-getdefaultviewmodel-)
+          - [`plaintext`](#-options-plaintext-)
+          - [`resolvers`](#-options-resolvers-)
+        - Its [`addRoute`](#-addroute-definition-) argument
+      - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
+      - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
     - A [suite of plugins](#http-framework-plugins) can integrate Taunus and an HTTP server
-      - Using `taunus-express` for [Express][2]
-      - Using `taunus-hapi` for [Hapi][3]
+      - Using [`taunus-express`](#using-taunus-express-) for [Express][2]
+      - Using [`taunus-hapi`](#using-taunus-hapi-) for [Hapi][3]
+    - A [CLI that produces a wiring module](#command-line-interface) for the client-side
+      - The [`--output`](#-output-) flag
+      - The [`--watch`](#-watch-) flag
+      - The [`--transform <module>`](#-transform-module-) flag
+      - The [`--resolvers <module>`](#-resolvers-module-) flag
+      - The [`--standalone`](#-standalone-) flag
     - A [client-side API](#client-side-api) that deals with client-side rendering
-      - The `taunus.mount` method
-      - The `taunus.on` method
-      - The `taunus.once` method
-      - The `taunus.off` method
-      - The `taunus.intercept` method
-      - The `taunus.partial` method
-      - The `taunus.navigate` method
-      - The `taunus.state` property
-      - The `taunus.route` method
-    - A CLI that facilitates a wiring module to make the server-to-client transition easier
-      - The `--output <dest>` flag
-      - The `--watch` flag
-      - The `--transform <module>` flag
-      - The `--replacements <module>` flag
-      - The `--standalone` flag
+      - The [`taunus.mount`](#-taunus-mount-container-wiring-options-) method
+      - The [`taunus.on`](#-taunus-on-type-fn-) method
+      - The [`taunus.once`](#-taunus-once-type-fn-) method
+      - The [`taunus.off`](#-taunus-off-type-fn-) method
+      - The [`taunus.intercept`](#-taunus-intercept-action-fn-) method
+      - The [`taunus.partial`](#-taunus-partial-container-action-model-route-) method
+      - The [`taunus.navigate`](#-taunus-navigate-url-) method
+      - The [`taunus.state`](#-taunus-route-url-) property
+      - The [`taunus.route`](#-taunus-state-) method
+    - The [`.taunusrc`](#the-taunusrc-manifest) manifest
 
     # Server-side API
 
-    The server-side API is used to set up the view router
+    The server-side API is used to set up the view router. It then gets out of the way, allowing the client-side to eventually take over and add any extra sugar on top, _including client-side rendering_.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.mount(addRoute, options)`
+    ## `taunus.mount(addRoute, options?)`
 
     Mounts Taunus on top of a server-side router, by registering each route in `options.routes` with the `addRoute` method.
 
@@ -67,13 +68,13 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    #### The `options` object
+    #### The `options?` object
 
     There's a few options that can be passed to the server-side mountpoint. You're probably going to be passing these to your [HTTP framework plugin](#http-framework-plugins), rather than using `taunus.mount` directly.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ###### `options.layout`
+    ###### `options.layout?`
 
     The `layout` property is expected to have the `function(data)` signature. It'll be invoked whenever a full HTML document needs to be rendered, and a `data` object will be passed to it. That object will contain everything you've set as the view model, plus a `partial` property containing the raw HTML of the rendered partial view. Your `layout` method will typically wrap the raw HTML for the partial with the bare bones of an HTML document. Check out [the `layout.jade` used in Pony Foo][4] as an example.
 
@@ -115,7 +116,7 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ###### `options.getDefaultViewModel`
+    ###### `options.getDefaultViewModel?`
 
     The `getDefaultViewModel(done)` property can be a method that puts together the base view model, which will then be extended on an action-by-action basis. When you're done creating a view model, you can invoke `done(null, model)`. If an error occurs while building the view model, you should call `done(err)` instead.
 
@@ -123,20 +124,20 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ###### `options.plaintext`
+    ###### `options.plaintext?`
 
     The `plaintext` options object is passed directly to [hget][5], and it's used to [tweak the plaintext version][6] of your site.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ###### `options.resolvers`
+    ###### `options.resolvers?`
 
     Resolvers are used to determine the location of some of the different pieces of your application. Typically you won't have to touch these in the slightest.
 
-    Signature                         | Description
-    ----------------------------------|------------------------------------------------------
-    `getControllerActionPath(action)` | Return path to server-side controller action handler module
-    `getViewTemplatePath(action)`     | Return path to view template module
+    Signature                     | Description
+    ------------------------------|------------------------------------------------------
+    `getServerController(action)` | Return path to server-side controller action handler module
+    `getView(action)`             | Return path to view template module
 
     The `addRoute` method passed to `taunus.mount` on the server-side is mostly going to be used internally by the HTTP framework plugins, so feel free to skip over the following section.
 
@@ -157,13 +158,13 @@ section.ly-section.md-markdown
 
     This method is almost an implementation detail as you should be using Taunus through one of the plugins anyways, so we won't go very deep into it.
 
-    The render method is what Taunus uses to render views by constructing HTML, JSON, or plaintext responses. The `action` property determines the default view that will be rendered. The `viewModel` will be extended by [the default view model](#options-getdefaultviewmodel), and it may also override the default `action` by setting `viewModel.model.action`.
+    The render method is what Taunus uses to render views by constructing HTML, JSON, or plaintext responses. The `action` property determines the default view that will be rendered. The `viewModel` will be extended by [the default view model](#-options-getdefaultviewmodel-), and it may also override the default `action` by setting `viewModel.model.action`.
 
     The `req`, `res`, and `next` arguments are expected to be the Express routing arguments, but they can also be mocked _(which is in fact what the Hapi plugin does)_.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.rebuildDefaultViewModel(done)`
+    ## `taunus.rebuildDefaultViewModel(done?)`
 
     Once Taunus has been mounted, calling this method will rebuild the view model defaults using the `getDefaultViewModel` that was passed to `taunus.mount` in the options. An optional `done` callback will be invoked when the model is rebuilt.
 
@@ -177,7 +178,7 @@ section.ly-section.md-markdown
 
     ## Using `taunus-express`
 
-    The `taunus-express` plugin is probably the easiest to use, as Taunus was originally developed with just [Express][2] in mind. In addition to the options already outlined for [taunus.mount](#taunus-mount-addroute-options-), you can add middleware for any route individually.
+    The `taunus-express` plugin is probably the easiest to use, as Taunus was originally developed with just [Express][2] in mind. In addition to the options already outlined for [taunus.mount](#-taunus-mount-addroute-options-), you can add middleware for any route individually.
 
     - `middleware` are any methods you want Taunus to execute as middleware in Express applications
 
@@ -195,31 +196,207 @@ section.ly-section.md-markdown
     taunusExpress(taunus, app, options);
     ```
 
-    The `taunus-express` module will merely set up Taunus and add the relevant routes to your Express application by calling `app.get` a bunch of times.
+    The `taunusExpress` method will merely set up Taunus and add the relevant routes to your Express application by calling `app.get` a bunch of times. You can [find taunus-express on GitHub][7].
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## Using `taunus-hapi`
 
+    The `taunus-hapi` plugin is a bit more involved, and you'll have to create a Pack in order to use it. In addition to [the options we've already covered](#-taunus-mount-addroute-options-), you can add `config` on any route.
+
+    - `config` is passed directly into the route registered with Hapi, giving you the most flexibility
+
+    To get `taunus-hapi` going you can use the following piece of code, and you can bring your own `options` object.
+
+    ```js
+    var Hapi = require('hapi');
+    var taunus = require('taunus');
+    var taunusHapi = require('taunus-hapi')(taunus);
+    var pack = new Hapi.Pack();
+
+    pack.register({
+      plugin: taunusHapi,
+      options: {
+        // ...
+      }
+    });
+    ```
+
+    The `taunusHapi` plugin will mount Taunus and register all of the necessary routes. You can [find taunus-hapi on GitHub][8].
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # Command-Line Interface
+
+    Once you've set up the server-side to render your views using Taunus, it's only logical that you'll want to render the views in the client-side as well, effectively converting your application into a single-page application after the first view has been rendered on the server-side.
+
+    The Taunus CLI is an useful intermediary in the process of getting the configuration you wrote so far for the server-side to also work well in the client-side.
+
+    Install it globally for development, but remember to use local copies for production-grade uses.
+
+    ```shell
+    npm install -g taunus
+    ```
+
+    When invoked without any arguments, the CLI will simply follow the default conventions to find your route definitions, views, and client-side controllers.
+
+    ```shell
+    taunus
+    ```
+
+    By default, the output will be printed to the standard output, making for a fast debugging experience. Here's the output if you just had a single `home/index` route, and the matching view and client-side controller existed.
+
+    ```js
+    'use strict';
+
+    var templates = {
+      'home/index': require('./views/home/index.js')
+    };
+
+    var controllers = {
+      'home/index': require('../client/js/controllers/home/index.js')
+    };
+
+    var routes = {
+      '/': {
+        action: 'home/index'
+      }
+    };
+
+    module.exports = {
+      templates: templates,
+      controllers: controllers,
+      routes: routes
+    };
+    ```
+
+    You can use a few options to alter the outcome of invoking `taunus`.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `--output`
+
+    <sub>the `-o` alias is available</sub>
+
+    Output is written to a file instead of to standard output. The file path used will be the `client_wiring` option in [`.taunusrc`](#the-taunusrc-manifest), which defaults to `'.bin/wiring.js'`.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `--watch`
+
+    <sub>the `-w` alias is available</sub>
+
+    Whenever a server-side route definition changes, the output is printed again to either standard output or a file, depending on whether `--output` was used.
+
+    The program won't exit.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `--transform <module>`
+
+    <sub>the `-t` alias is available</sub>
+
+    This flag allows you to transform server-side routes into something the client-side understands. Express routes are completely compatible with the client-side router, but Hapi routes need to be transformed using the [`hapiify`][9] module.
+
+    ```shell
+    npm install hapiify
+    taunus -t hapiify
+    ```
+
+    Using this transform relieves you from having to define the same routes twice using slightly different formats that convey the same meaning.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `--resolvers <module>`
+
+    <sub>the `-r` alias is available</sub>
+
+    Similarly to the [`resolvers`](#-options-resolvers-) option that you can pass to [`taunus.mount`](#-taunus-mount-addroute-options-), these resolvers can change the way in which file paths are resolved.
+
+    Signature                     | Description
+    ------------------------------|------------------------------------------------------
+    `getClientController(action)` | Return path to client-side controller action handler module
+    `getView(action)`             | Return path to view template module
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `--standalone`
+
+    <sub>the `-s` alias is available</sub>
+
+    Under this experimental flag, the CLI will use Browserify to compile a standalone module that includes the wiring normally exported by the CLI plus all of Taunus [as a UMD module][10].
+
+    This would allow you to use Taunus on the client-side even if you don't want to use [Browserify][11] directly.
+
+    Feedback and suggestions about this flag, _and possible alternatives that would make Taunus easier to use_, are welcome.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     # Client-side API
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.mount(container, wiring, options)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.on(type, fn)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.once(type, fn)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.off(type, fn)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.intercept(action, fn)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.partial(container, action, model, route)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.navigate(url)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.route(url)`
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `taunus.state`
 
-    # Command-Line Interface
-    ## `--output <dest>`
-    ## `--watch`
-    ## `--transform <module>`
-    ## `--replacements <module>`
-    ## `--standalone`
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # The `.taunusrc` manifest
+
+    If you want to use values other than the conventional defaults shown in the table below, then you should create a `.taunusrc` file. Note that the defaults need to be overwritten in a case-by-case basis. These options can also be configured in your `package.json`, under the `taunus` property.
+
+    ```json
+    {
+      "views": ".bin/views",
+      "server_routes": "controllers/routes.js",
+      "server_controllers": "controllers",
+      "client_controllers": "client/js/controllers",
+      "client_wiring": ".bin/wiring.js"
+    }
+    ```
+
+    - The `views` directory is where your views _(already compiled into JavaScript)_ are placed. These views are used directly on both the server-side and the client-side
+    - The `server_routes` file is the module where you export a collection of routes. The CLI will pull these routes when creating the client-side routes for the wiring module
+    - The `server_controllers` directory is the root directory where your server-side controllers live. It's used when setting up the server-side router
+    - The `client_controllers` directory is where your client-side controller modules live. The CLI will `require` these controllers in its resulting wiring module
+    - The `client_wiring` file is where your wiring module will be placed by the CLI. You'll then have to `require` it in your application when booting up Taunus
+
+    Here is where things get [a little conventional][12]. Views, and both server-side and client-side controllers are expected to be organized by following the `{root}/{controller}/{action}` pattern, but you could change that using `resolvers` when invoking the CLI and using the server-side API.
+
+    Views and controllers are also expected to be CommonJS modules that export a single method.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     [1]: /getting-started
     [2]: http://expressjs.com
@@ -227,3 +404,9 @@ section.ly-section.md-markdown
     [4]: https://github.com/ponyfoo/ponyfoo/blob/33271751312db6e92059d98293d0a7ac6e9e8e5b/views/server/layout/layout.jade
     [5]: https://github.com/bevacqua/hget
     [6]: https://github.com/ponyfoo/ponyfoo/blob/f6d6b5068ff03a387f503900160d9fdc1e749750/controllers/routing.js#L70-L72
+    [7]: https://github.com/taunus/taunus-express
+    [8]: https://github.com/taunus/taunus-hapi
+    [9]: https://github.com/taunus/hapiify
+    [10]: https://github.com/umdjs/umd
+    [11]: http://browserify.org
+    [12]: http://en.wikipedia.org/wiki/Convention_over_configuration

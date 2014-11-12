@@ -4,12 +4,19 @@ input[type='submit']
   cursor pointer
   text-decoration none
 
-a
+a,
+a:link code,
+a:visited code
   color c-orange
   font-weight bold
   transition all 0.3s ease-out
 
-  &:hover
-    text-decoration underline
-    background-color c-yellow-strong
-    color c-green
+a:link code,
+a:visited code
+  background-color rgba(c-orange, 0.1)
+
+a:hover,
+a:hover code
+  text-decoration underline
+  background-color c-yellow-strong
+  color c-green
