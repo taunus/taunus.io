@@ -328,13 +328,37 @@ section.ly-section.md-markdown
 
     #### Booting up the client-side router
 
-    ....
+    Once we have the wiring module, booting up the client-side engine is pretty easy. Taunus suggests you use `client/js` to keep all of your client-side JavaScript logic, but that is up to you too. For the sake of this guide, let's stick to the conventions.
+
+    ```shell
+    touch client/js/main.js
+    ```
+
+    The `main` module will be used as the _entry point_ of your application on the client-side. Here you'll need to import `taunus`, the wiring module we've just built, and a reference to the DOM element where you are rendering your partial views. Once you have all that, you can invoke `taunus.mount`.
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var wiring = require('../../.bin/wiring');
+    var main = document.getElementsByTagName('main')[0];
+
+    taunus.mount(main, wiring);
+    ```
+
+    The mountpoint will set up the client-side Taunus router and fire the client-side view controller for the view that has been rendered in the server-side. Whenever an anchor link is clicked, Taunus will be able to hijack that click and request the model using AJAX, but only if it matches a view route (otherwise the link will behave just like any normal link).
+
+    By default, the mountpoint will issue an AJAX request for the view model of the server-side rendered view. This is akin to what dedicated client-side rendering frameworks such as AngularJS do, where views are only rendered after all the JavaScript has been downloaded, parsed, and executed. Except Taunus provides human-readable content faster, before the JavaScript even begins downloading, although it won't be functional until the client-side controller runs.
+
+    An alternative is to inline the view model alongside the views in a `<script type='text/taunus'>` tag, but this tends to slow down the initial response (models are _typically larger_ than the resulting views). A third strategy is that you request the model asynchronously outside of Taunus, allowing you to fetch both the view model and Taunus itself concurrently, but that's harder to set up.
+
+    The three booting strategies are explained in [the API documentation][18] and further discussed in [the optimization guide][25]. For now, the default strategy _(`'auto'`)_ should suffice. It fetches the view model using an AJAX request right after Taunus loads.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     #### Adding functionality in a client-side controller
 
-    ....
+    Client-side controllers run whenever a view is
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
