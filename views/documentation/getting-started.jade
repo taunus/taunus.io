@@ -143,6 +143,17 @@ section.ly-section.md-markdown
 
     It's important to know that if you omit the creation of a controller then Taunus will skip that step, and render the view passing it whatever the default model is _(more on that [in the API documentation][18], but it defaults to `{}`)_.
 
+    Here's what you'd get if you attempted to run the application at this point.
+
+    ```shell
+    node app &
+    curl localhost:3000
+    ```
+
+    ![Screenshot with `node app` results][32]
+
+    Turns out you're missing a lot of things! Taunus is quite lenient and it'll try its best to let you know what you might be missing, though. Apparently you don't have a layout, a server-side controller, or even a view! _That's rough._
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     #### Creating a layout
@@ -153,13 +164,13 @@ section.ly-section.md-markdown
     touch layout.js
     ```
 
-    Note that the `partial` property in the `model` _(as seen below)_ is created on the fly after rendering partial views. The layout function we'll be using here effectively means _"there is no layout, just render the partials"_.
+    Note that the `partial` property in the `model` _(as seen below)_ is created on the fly after rendering partial views. The layout function we'll be using here effectively means _"use the following combination of plain text and the **(maybe HTML)** partial view"_.
 
     ```js
     'use strict';
 
     module.exports = function (model) {
-      return model.partial;
+      return 'This is the partial: "' + model.partial + '"';
     };
     ```
 
@@ -186,6 +197,17 @@ section.ly-section.md-markdown
     taunusExpress(taunus, app, options);
     app.listen(3000);
     ```
+
+    Here's what you'd get if you ran the application at this point.
+
+    ```shell
+    node app &
+    curl localhost:3000
+    ```
+
+    ![Screenshot with `node app` output][33]
+
+    At this point we have a layout, but we're still missing the partial view and the server-side controller. We can do without the controller, but having no views is kind of pointless when you're trying to get an MVC engine up and running, right?
 
     You'll find tools related to view templating in the [complementary modules section][15]. If you don't provide a `layout` property at all, Taunus will render your model in a response by wrapping it in `<pre>` and `<code>` tags, which may aid you when getting started.
 
@@ -488,3 +510,5 @@ section.ly-section.md-markdown
     [29]: http://caniuse.com/#feat=indexeddb
     [30]: http://i.imgur.com/4P8vNe9.png
     [31]: http://i.imgur.com/n8mH4mN.png
+    [32]: http://i.imgur.com/08lnCec.png
+    [33]: http://i.imgur.com/wUbnCyk.png
