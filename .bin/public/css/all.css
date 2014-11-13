@@ -550,7 +550,7 @@ ul ul,
 ul ol,
 ol ul,
 ol ol {
-  margin-left: 20px;
+  margin-left: 5px;
 }
 b,
 strong {
@@ -603,6 +603,14 @@ button,
 button:hover,
 .uv-button:hover {
   background-color: #aad9c5;
+}
+@media only screen and (min-width: 768px) {
+  ul ul,
+  ul ol,
+  ol ul,
+  ol ol {
+    margin-left: 20px;
+  }
 }
 blockquote {
   margin-bottom: 10px;
@@ -772,7 +780,7 @@ tr {
   color: #333;
 }
 .md-markdown pre code {
-  display: block;
+  display: inline-block;
 }
 .md-markdown pre,
 .md-markdown code {
