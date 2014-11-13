@@ -61,6 +61,8 @@ section.ly-section.md-markdown
     Here's an incomplete example of how this method may be used. It is incomplete because route definitions have more options beyond the `route` and `action` properties.
 
     ```js
+    'use strict';
+
     taunus.mount(addRoute, {
       routes: [{ route: '/', action: 'home/index' }]
     });
@@ -191,6 +193,8 @@ section.ly-section.md-markdown
     To get `taunus-express` going you can use the following piece of code, provided that you come up with an `options` object.
 
     ```js
+    'use strict';
+
     var taunus = require('taunus');
     var taunusExpress = require('taunus-express');
     var express = require('express');
@@ -215,6 +219,8 @@ section.ly-section.md-markdown
     To get `taunus-hapi` going you can use the following piece of code, and you can bring your own `options` object.
 
     ```js
+    'use strict';
+
     var Hapi = require('hapi');
     var taunus = require('taunus');
     var taunusHapi = require('taunus-hapi')(taunus);
@@ -403,6 +409,8 @@ section.ly-section.md-markdown
     The `manual` strategy is the most involved of the three, but also the most performant. In this strategy you're supposed to add the following _(seemingly pointless)_ snippet of code in a `<script>` other than the one that's pulling down Taunus, so that they are pulled concurrently rather than serially.
 
     ```js
+    'use strict';
+
     window.taunusReady = function (model) {
       window.taunusReady = model;
     };
@@ -420,6 +428,8 @@ section.ly-section.md-markdown
     The good news is that the server-side supports JSONP out the box. Here's a snippet of code you could use to pull down the view model and boot Taunus up as soon as both operations are ready.
 
     ```js
+    'use strict';
+
     function inject (url) {
       var script = document.createElement('script');
       script.src = url;

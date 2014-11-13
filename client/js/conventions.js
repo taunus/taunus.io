@@ -4,7 +4,7 @@ var $ = require('dominus');
 var raf = require('raf');
 var taunus = require('taunus');
 var throttle = require('./throttle');
-var slowScrollCheck = throttle(scrollCheck, 500);
+var slowScrollCheck = throttle(scrollCheck, 5000);
 var tracking;
 var heading;
 
@@ -47,7 +47,7 @@ function inViewport (element) {
 }
 
 function set (hash) {
-  taunus.navigate(hash, { scroll: false });
+  //taunus.navigate(hash, { scroll: false });
 }
 
 module.exports = conventions;
