@@ -6,7 +6,13 @@ section.ly-section.md-markdown
 
     Taunus can be used for routing, putting together controllers, models and views to handle human interaction. If you [head over to the API documentation][1], you'll notice that the server-side API, the command-line interface, and the `.taunusrc` manifest are only concerned with providing a conventional shared-rendering MVC engine.
 
-    In the server-side you might need to do other things besides routing and rendering views, and other modules can take care of that. In the client-side, you might be used to your MVC framework of choice resolving everything on your behalf, from DOM manipulation and data-binding to hooking up with a REST API, and everywhere in between.
+    In the server-side you might need to do other things besides routing and rendering views, and other modules can take care of that. However, you're used to having database access, search, logging, and a variety of services handled by separate libraries, instead of a single behemoth that tries to do everything.
+
+    > In the client-side, you might be used to your MVC framework of choice resolving everything on your behalf, from DOM manipulation and data-binding to hooking up with a REST API, and everywhere in between.
+
+    Taunus attempts to bring the server-side mentality of _"not doing everything is okay"_ into the world of client-side web application development as well. To that end, Taunus recommends that you give a shot to libraries that also do **one thing well**.
+
+    In this brief article we'll recommend three different libraries that play well with Taunus, and you'll also learn how to search for modules that can give you access to other functionality you may be interested in.
 
     `dominus`
     `xhr`

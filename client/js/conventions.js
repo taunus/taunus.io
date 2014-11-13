@@ -5,8 +5,11 @@ var raf = require('raf');
 var taunus = require('taunus');
 var throttle = require('./throttle');
 var slowScrollCheck = throttle(scrollCheck, 50);
+var hx = /^h[1-6]$/i;
 var tracking;
 var heading;
+
+$('body').on('click', 'h1,h2,h3,h4,h5,h6', headingClick);
 
 raf(scroll);
 
@@ -32,7 +35,6 @@ function scrollCheck () {
   }
   heading = found.i(0);
   heading.addClass('uv-highlight');
-  set('#' + heading.attr('id'));
 }
 
 function inViewport (element) {
@@ -46,8 +48,19 @@ function inViewport (element) {
   return viewable;
 }
 
-function set (hash) {
-  taunus.navigate(hash, { scroll: false, replaceState: true });
+function findHeading (e) {
+  var h = e.target;
+  while (h && !hx.test(h.tagName)) {
+    h = h.parentElement;
+  }
+  return h;
+}
+
+function headingClick (e) {
+  var h = findHeading(e);
+  if (h && h.id) {
+    taunus.navigate('#' + h.id);
+  }
 }
 
 module.exports = conventions;
