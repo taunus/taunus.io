@@ -2,11 +2,10 @@
 
 var $ = require('dominus');
 var raf = require('raf');
-var sidebar = $('.sb-sidebar');
 var throttle = require('./throttle');
-var slowScrollCheck = throttle(scrollCheck, 200);
-var heading;
+var slowScrollCheck = throttle(scrollCheck, 500);
 var tracking;
+var heading;
 
 raf(scroll);
 
