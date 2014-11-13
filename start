@@ -4,7 +4,10 @@
 rm -rf .bin
 
 # build expected directory structure
-mkdir -p .bin/{views,public/{js,css}}
+mkdir -p .bin/{views,public/{js,css,img}}
+
+# copy favicon
+cp client/favicon.ico .bin/public
 
 # compile css into a single bundle
 stylus client/css/all.styl -o .bin/public/css --include-css --include client/css --watch &
