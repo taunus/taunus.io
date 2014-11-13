@@ -17,8 +17,7 @@
   },
   "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
   "scripts": {
-    "start": "./start",
-    "deploy": "./production && npm version patch && git push heroku master"
+    "start": "./start"
   },
   "dependencies": {
     "hapi": "^7.5.0",
