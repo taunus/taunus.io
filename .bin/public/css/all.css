@@ -534,7 +534,7 @@ thead tr {
 }
 body {
   font-family: 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
-  background: #fff7bd;
+  background: #fbf3ea;
   color: #444;
 }
 ul,
@@ -545,6 +545,12 @@ ol {
 }
 ul {
   list-style-type: disc;
+}
+ul ul {
+  list-style-type: square;
+}
+ul ul ul {
+  list-style-type: circle;
 }
 ul ul,
 ul ol,
@@ -596,7 +602,7 @@ button,
   border: none;
   outline: none;
   background-color: #95cfb7;
-  color: #fff7bd;
+  color: #fbf3ea;
   padding: 6px 8px;
   font-size: 1.2em;
 }
@@ -747,7 +753,7 @@ tr {
 }
 .ly-section {
   padding: 20px;
-  background-color: rgba(242,242,111,0.3);
+  background-color: rgba(245,223,201,0.3);
   margin: 20px 0;
 }
 @media only screen and (min-width: 768px) {
@@ -755,6 +761,71 @@ tr {
     font-size: 4em;
     border-top: 8px double #95cfb7;
     border-bottom: 8px double #95cfb7;
+  }
+  .ly-main {
+    padding-left: 225px;
+  }
+}
+.sb-sidebar {
+  position: relative;
+  -webkit-transition: all 1.5s ease-out;
+  -moz-transition: all 1.5s ease-out;
+  -o-transition: all 1.5s ease-out;
+  -ms-transition: all 1.5s ease-out;
+  transition: all 1.5s ease-out;
+}
+.sb-toc {
+  display: none;
+}
+.sb-toc-current {
+  background-color: #f2f26f;
+}
+@media only screen and (min-width: 768px) {
+  .sb-sidebar {
+    position: absolute;
+    width: 200px;
+    margin-top: 20px;
+    margin-right: 25px;
+    text-align: right;
+  }
+  .sb-sidebar li {
+    display: block;
+  }
+  .sb-container {
+    background-color: rgba(245,223,201,0.3);
+    margin-bottom: 25px;
+  }
+  .sb-toc {
+    left: 0;
+    right: 0;
+    display: block;
+    text-align: left;
+  }
+  .sb-toc ul {
+    margin-left: 0;
+    list-style-type: disc;
+  }
+  .sb-toc ul ul {
+    margin-left: 5px;
+    list-style-type: square;
+  }
+  .sb-toc ul ul ul {
+    list-style-type: circle;
+  }
+  .sb-toc ul li {
+    display: list-item;
+  }
+  .sb-toc a {
+    display: block;
+    text-transform: capitalize;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 10px;
+  }
+  .sb-toc a code {
+    text-transform: none;
   }
 }
 .nv-item {

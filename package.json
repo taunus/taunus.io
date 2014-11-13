@@ -20,9 +20,11 @@
     "start": "./start"
   },
   "dependencies": {
+    "dominus": "^2.3.8",
     "hapi": "^7.5.0",
     "hapiify": "^1.0.0",
     "jadum": "^1.3.2",
+    "raf": "^2.0.4",
     "taunus": "^2.7.2",
     "taunus-hapi": "^1.1.0",
     "ultramarked": "^1.7.0"

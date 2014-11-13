@@ -15,8 +15,8 @@ html(lang='en', itemscope, itemtype='http://schema.org/Blog')
         a.ly-title(href='/', aria-label='Go to home') Taunus
       h2.ly-subheading Micro Isomorphic MVC Engine for Node.js
 
-    aside
-      nav.nv-container
+    aside.sb-sidebar
+      nav.sb-container
         ul.nv-items
           li.nv-item
             a(href='/') About
@@ -33,5 +33,5 @@ html(lang='en', itemscope, itemtype='http://schema.org/Blog')
           li.nv-item
             a(href='/changelog') Changelog
 
-    main#application-root(data-taunus='model')!=partial
+    main.ly-main#application-root(data-taunus='model')!=partial
     script(src='/js/all.js')

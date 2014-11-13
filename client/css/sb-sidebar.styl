@@ -1,0 +1,55 @@
+.sb-sidebar
+  position relative
+  transition all 1.5s ease-out
+
+.sb-toc
+  display none
+
+.sb-toc-current
+  background-color c-yellow-strong
+
+@media only screen and (min-width: 768px)
+  .sb-sidebar
+    position absolute
+    width 200px
+    margin-top 20px
+    margin-right 25px
+    text-align right
+
+    li
+      display block
+
+  .sb-container
+    background-color rgba(c-sepia, 0.3)
+    margin-bottom 25px
+
+  .sb-toc
+    left 0
+    right 0
+    display block
+    text-align left
+
+    ul
+      margin-left 0
+      list-style-type disc
+
+      ul
+        margin-left 5px
+        list-style-type square
+
+        ul
+          list-style-type circle
+
+      li
+        display list-item
+
+    a
+      display block
+      text-transform capitalize
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      padding 10px
+
+      code
+        text-transform none
