@@ -63,7 +63,7 @@ section.ly-section.md-markdown
     mkdir getting-started
     cd getting-started
     npm init
-    npm install taunus taunus-express express --save
+    npm install --save taunus taunus-express express
     ```
 
     ![Screenshot with `npm init` output][30]
@@ -231,7 +231,7 @@ section.ly-section.md-markdown
     Next you'll want to compile the view into a function. To do that you can use [jadum][16], a specialized Jade compiler that plays well with Taunus by being aware of `require` statements, and thus saving bytes when it comes to client-side rendering. Let's install it globally, for the sake of this exercise _(you should install it locally when you're developing a real application)_.
 
     ```shell
-    npm install jadum -g
+    npm install --global jadum
     ```
 
     To compile every view in the `views` directory into functions that work well with Taunus, you can use the command below. The `--output` flag indicates where you want the views to be placed. We chose to use `.bin` because that's where Taunus expects your compiled views to be by default. But since Taunus follows the [convention over configuration][17] approach, you could change that if you wanted to.
@@ -349,7 +349,31 @@ section.ly-section.md-markdown
     Taunus comes with a CLI that can be used to wire your Node.js routes and views into the client-side. The same CLI can be used to wire up the client-side controllers as well. The main reason why the Taunus CLI exists is so that you don't have to `require` every single view and controller, undoing a lot of the work that was put into code reuse. Just like we did with `jadum` earlier, we'll install the `taunus` CLI globally for the sake of exercising, but we understand that relying on globally installed modules is insufficient for production-grade applications.
 
     ```shell
-    npm install taunus -g
+    npm install --global taunus
+    ```
+
+    Before you can use the CLI, you should move the route definitions to `controllers/routes.js`. That's where Taunus expects them to be. If you want to place them something else, [the API documentation can help you][18].
+
+    ```shell
+    mv routes.js controllers/routes.js
+    ```
+
+    Since you moved the routes you should also update the `require` statement in the `app.js` module.
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var app = express();
+    var options = {
+      routes: require('./controllers/routes'),
+      layout: require('./.bin/views/layout')
+    };
+
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
     ```
 
     The CLI is terse in both its inputs and its outputs. If you run it without any arguments it'll print out the wiring module, and if you want to persist it you should provide the `--output` flag. In typical [convention-over-configuration][8] fashion, the CLI will default to inferring your views are located in `.bin/views` and that you want the wiring module to be placed in `.bin/wiring.js`, but you'll be able to change that if it doesn't meet your needs.
@@ -364,7 +388,8 @@ section.ly-section.md-markdown
     'use strict';
 
     var templates = {
-      'home/index': require('./views/home/index.js')
+      'home/index': require('./views/home/index.js'),
+      'layout': require('./views/layout.js')
     };
 
     var controllers = {
@@ -382,6 +407,8 @@ section.ly-section.md-markdown
       routes: routes
     };
     ```
+
+    ![Screenshot with `taunus` output][37]
 
     Note that the `controllers` object is empty because you haven't created any _client-side controllers_ yet. We created server-side controllers but those don't have any effect in the client-side, besides determining what gets sent to the client.
 
@@ -408,6 +435,7 @@ section.ly-section.md-markdown
     Once we have the wiring module, booting up the client-side engine is pretty easy. Taunus suggests you use `client/js` to keep all of your client-side JavaScript logic, but that is up to you too. For the sake of this guide, let's stick to the conventions.
 
     ```shell
+    mkdir -p client/js
     touch client/js/main.js
     ```
 
@@ -442,6 +470,7 @@ section.ly-section.md-markdown
     These controllers are entirely optional, which makes sense since we're progressively enhancing the application: it might not even be necessary! Let's add some client-side functionality to the example we've been building.
 
     ```shell
+    mkdir -p client/js/controllers/home
     touch client/js/controllers/home/index.js
     ```
 
@@ -450,10 +479,79 @@ section.ly-section.md-markdown
     ```js
     'use strict';
 
-    module.exports = function (model, route, container) {
-      console.log('Rendered view %s using model %s', route.action, model);
+    module.exports = function (model, container, route) {
+      console.log('Rendered view %s using model:\n%s', route.action, JSON.stringify(model, null, 2));
     };
     ```
+
+    Since we weren't using the `--watch` flag from the Taunus CLI, you'll have to recompile the wiring at this point, so that the controller gets added to that manifest.
+
+    ```shell
+    taunus --output
+    ```
+
+    Of course, you'll now have to wire up the client-side JavaScript using [Browserify][38]!
+
+    #### Compiling your client-side JavaScript
+
+    You'll need to compile the `client/js/main.js` module, our client-side application's entry point, using Browserify since the code is written using CommonJS. In this example you'll install `browserify` globally to compile the code, but naturally you'll install it locally when working on a real-world application.
+
+    ```shell
+    npm install --global browserify
+    ```
+
+    Once you have the Browserify CLI, you'll be able to compile the code right from your command line. The `-d` flag tells Browserify to add an inline source map into the compiled bundle, making debugging easier for us. The `-o` flag redirects output to the indicated file, whereas the output is printed to standard output by default.
+
+    ```shell
+    mkdir -p .bin/public/js
+    browserify client/js/main.js -do .bin/public/js/all.js
+    ```
+
+    We haven't done much of anything with the Express application, so you'll need to adjust the `app.js` module to serve static assets. If you're used to Express, you'll notice there's nothing special about how we're using `serve-static`.
+
+    ```shell
+    npm install --save serve-static
+    ```
+
+    Let's configure the application to serve static assets from `.bin/public`.
+
+    ```js
+    'use strict';
+
+    var taunus = require('taunus');
+    var taunusExpress = require('taunus-express');
+    var express = require('express');
+    var serveStatic = require('serve-static');
+    var app = express();
+    var options = {
+      routes: require('./controllers/routes'),
+      layout: require('./.bin/views/layout')
+    };
+
+    app.use(serveStatic('.bin/public'));
+    taunusExpress(taunus, app, options);
+    app.listen(3000);
+    ```
+
+    Next up, you'll have to edit the layout to include the compiled JavaScript bundle file.
+
+    ```jade
+    title=model.title
+    main!=partial
+    script(src='/js/all.js')
+    ```
+
+    Lastly, you can execute the application and see it in action!
+
+    ```shell
+    node app
+    ```
+
+    ![Screenshot with `node app` output][39]
+
+    If you open the application on a web browser, you'll notice that the appropriate information will be logged into the developer `console`.
+
+    ![Screenshot with the application running under Google Chrome][40]
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -557,3 +655,7 @@ section.ly-section.md-markdown
     [34]: http://i.imgur.com/zjaJYCq.png
     [35]: http://i.imgur.com/NvEWx9z.png
     [36]: http://i.imgur.com/LgZRFn5.png
+    [37]: http://i.imgur.com/fJnHdYi.png
+    [38]: http://browserify.org/
+    [39]: http://i.imgur.com/68O84wX.png
+    [40]: http://i.imgur.com/ZUF6NFl.png

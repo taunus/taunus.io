@@ -771,6 +771,9 @@ tr {
   padding: 3px 4px;
   color: #333;
 }
+.md-markdown pre code {
+  display: block;
+}
 .md-markdown pre,
 .md-markdown code {
   background-color: #f8f8f8;
