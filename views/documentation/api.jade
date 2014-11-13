@@ -535,12 +535,13 @@ section.ly-section.md-markdown
 
     There's a few options you can use to tweak the behavior of `taunus.navigate`.
 
-    Option    | Description
-    ----------|-------------------------------------------------------------------
-    `context` | A DOM element that caused the navigation event, used when emitting events
-    `strict`  | If set to `true` and the URL doesn't match any route, then the navigation attempt must be ignored
-    `scroll`  | When this is set to `false`, elements aren't scrolled into view after navigation
-    `force`   | Unless this is set to `true`, navigation won't _fetch a model_ if the route matches the current route, and `state.model` will be reused instead
+    Option           | Description
+    -----------------|-------------------------------------------------------------------
+    `context`        | A DOM element that caused the navigation event, used when emitting events
+    `strict`         | If set to `true` and the URL doesn't match any route, then the navigation attempt must be ignored
+    `scroll`         | When this is set to `false`, elements aren't scrolled into view after navigation
+    `force`          | Unless this is set to `true`, navigation won't _fetch a model_ if the route matches the current route, and `state.model` will be reused instead
+    `replaceState`   | Use `replaceState` instead of `pushState` when changing history
 
     Note that the notion of _fetching a model_ might be deceiving as the model could be pulled from the cache even if `force` is set to `true`.
 
