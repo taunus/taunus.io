@@ -40,9 +40,10 @@ section.ly-section.md-markdown
       - The [`taunus.off`](#-taunus-off-type-fn-) method
       - The [`taunus.intercept`](#-taunus-intercept-action-fn-) method
       - The [`taunus.partial`](#-taunus-partial-container-action-model-) method
-      - The [`taunus.navigate`](#-taunus-navigate-url-) method
-      - The [`taunus.state`](#-taunus-route-url-) property
-      - The [`taunus.route`](#-taunus-state-) method
+      - The [`taunus.navigate`](#-taunus-navigate-url-options-) method
+      - The [`taunus.route`](#-taunus-route-url-) method
+        - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
+      - The [`taunus.state`](#-taunus-state-) property
     - The [`.taunusrc`](#the-taunusrc-manifest) manifest
 
     # Server-side API
@@ -516,17 +517,43 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.navigate(url)`
+    ## `taunus.navigate(url, options)`
 
-    Whenever you want to navigate to a URL, say when an AJAX call finishes after a button click, you can use `taunus.navigate` passing it a plain URL.
+    Whenever you want to navigate to a URL, say when an AJAX call finishes after a button click, you can use `taunus.navigate` passing it a plain URL or anything that would cause `taunus.route(url)` to return a valid route.
 
-    If `taunus.navigate(url)` is called with an `url` that doesn't match any client-side route, then the user will be redirected via `location.href`.
+    By default, if `taunus.navigate(url, options)` is called with an `url` that doesn't match any client-side route, then the user will be redirected via `location.href`. In cases where the browser doesn't support the history API, `location.href` will be used as well.
+
+    There's a few options you can use to tweak the behavior of `taunus.navigate`.
+
+    Option    | Description
+    ----------|-------------------------------------------------------------------
+    `context` | A DOM element that caused the navigation event, used when emitting events
+    `strict`  | If set to `true` and the URL doesn't match any route, then the navigation attempt must be ignored
+    `scroll`  | When this is set to `false`, elements aren't scrolled into view after navigation
+    `force`   | Unless this is set to `true`, navigation won't _fetch a model_ if the route matches the current route, and `state.model` will be reused instead
+
+    Note that the notion of _fetching a model_ might be deceiving as the model could be pulled from the cache even if `force` is set to `true`.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.route(url)`
 
-    This convenience method allows you to break down a URL into its individual components. This method shouldn't be needed during normal usage of Taunus, but it's useful when debugging your routing tables.
+    This convenience method allows you to break down a URL into its individual components. The method accepts any of the following patterns, and it returns a Taunus route object.
+
+    - A fully qualified URL on the same origin, e.g `http://taunus.bevacqua.io/api`
+    - An absolute URL without an origin, e.g `/api`
+    - Just a hash, e.g `#foo` _(`location.href` is used)_
+    - Falsy values, e.g `null` _(`location.href` is used)_
+
+    Relative URLs are not supported _(anything that doesn't have a leading slash)_, e.g `files/data.json`. Anything that's not on the same origin or doesn't match one of the registered routes is going to yield `null`.
+
+    _This method is particularly useful when debugging your routing tables, as it gives you direct access to the router used internally by Taunus._
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # `taunus.route.equals(route, route)`
+
+    Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -538,9 +565,10 @@ section.ly-section.md-markdown
     - `controllers` are all the controllers, as defined in the wiring module
     - `templates` are all the templates, as defined in the wiring module
     - `routes` are all the routes, as defined in the wiring module
+    - `route` is a reference to the current route
+    - `model` is a reference to the model used to render the current view
     - `prefetch` exposes whether prefetching is turned on
     - `cache` exposes whether caching is enabled
-    - `model` is a reference to the model used to render the current view
 
     Of course, your not supposed to meddle with it, so be a good citizen and just inspect its values!
 

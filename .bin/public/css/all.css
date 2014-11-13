@@ -669,6 +669,13 @@ h5 {
 h6 {
   font-size: 1.1em;
 }
+h1,
+h2,
+h3,
+h4 {
+  margin-bottom: 15px;
+  padding-bottom: 6px;
+}
 @media only screen and (min-width: 768px) {
   h1 {
     font-size: 2.2em;
@@ -689,13 +696,6 @@ h6 {
     font-size: 1.2em;
   }
 }
-h1,
-h2,
-h3,
-h4 {
-  margin-bottom: 15px;
-  padding-bottom: 6px;
-}
 table {
   display: block;
   overflow: scroll;
@@ -712,23 +712,6 @@ td {
 }
 tr {
   line-height: 1.3em;
-}
-.uv-clearfix:after {
-  content: ' ';
-  display: block;
-  visibility: hidden;
-  clear: both;
-  font-size: 0;
-  height: 0;
-}
-.uv-left {
-  float: left;
-}
-.uv-right {
-  float: right;
-}
-.uv-hidden {
-  display: none !important;
 }
 .ly-title {
   margin: 0;
@@ -862,4 +845,30 @@ tr {
 .md-markdown h6:last-child,
 .md-markdown p:last-child {
   margin-bottom: 0;
+}
+.uv-clearfix:after {
+  content: ' ';
+  display: block;
+  visibility: hidden;
+  clear: both;
+  font-size: 0;
+  height: 0;
+}
+.uv-left {
+  float: left;
+}
+.uv-right {
+  float: right;
+}
+.uv-hidden {
+  display: none !important;
+}
+.uv-highlight,
+.uv-highlight code {
+  background-color: #f2f26f;
+  -webkit-transition: background-color 1s ease-in-out;
+  -moz-transition: background-color 1s ease-in-out;
+  -o-transition: background-color 1s ease-in-out;
+  -ms-transition: background-color 1s ease-in-out;
+  transition: background-color 1s ease-in-out;
 }

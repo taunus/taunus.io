@@ -2,6 +2,7 @@
 
 var $ = require('dominus');
 var raf = require('raf');
+var taunus = require('taunus');
 var throttle = require('./throttle');
 var slowScrollCheck = throttle(scrollCheck, 500);
 var tracking;
@@ -23,11 +24,15 @@ function scrollCheck () {
     return;
   }
   var found = $('main').find('h1,h2,h3,h4,h5,h6').filter(inViewport);
-  if (found.length === 0 || found[0] === heading) {
+  if (found.length === 0 || heading && found[0] === heading[0]) {
     return;
   }
-  heading = found[0];
-  set('#' + heading.id);
+  if (heading) {
+    heading.removeClass('uv-highlight');
+  }
+  heading = found.i(0);
+  heading.addClass('uv-highlight');
+  set('#' + heading.attr('id'));
 }
 
 function inViewport (element) {
@@ -42,9 +47,7 @@ function inViewport (element) {
 }
 
 function set (hash) {
-  if (history.pushState) {
-    history.pushState(null, null, hash);
-  }
+  taunus.navigate(hash, { scroll: false });
 }
 
 module.exports = conventions;

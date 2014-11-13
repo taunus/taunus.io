@@ -18,5 +18,7 @@ taunus.on('render', conventions);
 // mount taunus so it starts its routing engine
 taunus.mount(main, wiring);
 
-// make $ a global to make it easy to debug!
+// create globals to make it easy to debug
+// don't do this in production!
 global.$ = require('dominus');
+global.taunus = taunus;
