@@ -774,12 +774,6 @@ tr {
   -ms-transition: all 1.5s ease-out;
   transition: all 1.5s ease-out;
 }
-.sb-toc {
-  display: none;
-}
-.sb-toc-current {
-  background-color: #f2f26f;
-}
 @media only screen and (min-width: 768px) {
   .sb-sidebar {
     position: absolute;
@@ -794,38 +788,6 @@ tr {
   .sb-container {
     background-color: rgba(245,223,201,0.3);
     margin-bottom: 25px;
-  }
-  .sb-toc {
-    left: 0;
-    right: 0;
-    display: block;
-    text-align: left;
-  }
-  .sb-toc ul {
-    margin-left: 0;
-    list-style-type: disc;
-  }
-  .sb-toc ul ul {
-    margin-left: 5px;
-    list-style-type: square;
-  }
-  .sb-toc ul ul ul {
-    list-style-type: circle;
-  }
-  .sb-toc ul li {
-    display: list-item;
-  }
-  .sb-toc a {
-    display: block;
-    text-transform: capitalize;
-    overflow: hidden;
-    -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 10px;
-  }
-  .sb-toc a code {
-    text-transform: none;
   }
 }
 .nv-item {
