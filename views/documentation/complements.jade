@@ -16,29 +16,38 @@ section.ly-section.md-markdown
 
     # Using `dominus` for DOM querying
 
-    [Dominus][2] is an extra-small DOM querying library, currently clocking below **4kB minified and gzipped**, almost _ten times smaller_ than it's competition. Unlike jQuery and popular friends, Dominus doesn't provide AJAX features, layout math, `<form>` manipulation, promises, tens of event binding methods, a selector engine written in plain JavaScript, nor a myriad of utility functions. Instead, Dominus focuses solely on providing a rich DOM querying and manipulation API that gets rid of inconsistencies across browsers.
+    [Dominus][2] is an extra-small DOM querying library, currently clocking around **4kB minified and gzipped**, almost _ten times smaller_ than it's competition. Unlike jQuery and popular friends, Dominus doesn't provide AJAX features, layout math, `<form>` manipulation, promises, tens of event binding methods, a selector engine written in plain JavaScript, nor a myriad of utility functions. Instead, Dominus focuses solely on providing a rich DOM querying and manipulation API that gets rid of inconsistencies across browsers.
 
     While the API isn't exactly compatible with jQuery, it is definitely familiar to the jQuery adept. Chaining, versatility, expressiveness, and raw power are all core concerns for Dominus. You'll find that Dominus has more consistently named methods, given that it was built with a concise API in mind.
 
-    There's a few differences in semantics, and I believe that's a good thing. For instance, if you do `.value` on a checkbox or radio button you'll get back whether the input is checked. Similarly, if you call .text on it you'll get the text that's visible on the `input`.
+    There's a few differences in semantics, and I believe that's a good thing. For instance, if you do `.value` on a checkbox or radio button you'll get back whether the input is checked. Similarly, if you call `.text` on the input you'll get the text back, which is most often what you wanted to get.
 
     ```js
-    var $ = require('dominus');
+    var a = require('dominus');
+    var b = jQuery;
 
-    $('<input>').attr({ type: 'check', value: 'Foo' }).text();
+    a('<input>').attr({ type: 'radio', value: 'Foo' }).text();
     // <- 'Foo'
 
-    $('<input>').attr({ type: 'check', value: 'Foo', checked: true }).value();
+    a('<input>').attr({ type: 'radio', checked: true }).value();
     // <- true
 
-    jQuery('<input>').attr({ type: 'check', value: 'Foo' }).text();
+    b('<input>').attr({ type: 'radio', value: 'Foo' }).text();
     // <- ''
 
-    jQuery('<input>').attr({ type: 'check', value: 'Foo', checked: true }).value();
-    // <- ''
+    b('<input>').attr({ type: 'radio', checked: true }).val();
+    // <- 'Foo'
     ```
 
+    One of the best aspects of Dominus, _besides its small size_, is the fact that it extends native JavaScript arrays _(using [`poser`][5])_. That means you have access to all of the `Array` functional methods on any `Dominus` collections, such as `.forEach`, `.map`, `.filter`, `.sort` and so on.
+
+    Taunus doesn't make any extensive DOM manipulation _(nor querying)_ and doesn't need to use Dominus, but it may find a home in your application.
+
+    You can check out the _complete API documentation_ for `dominus` on [its GitHub repository][2].
+
     # Using `xhr` to make AJAX requests
+
+
 
     # Using `measly` as an upgrade to `xhr`
 
@@ -48,3 +57,4 @@ section.ly-section.md-markdown
     [2]: https://github.com/bevacqua/dominus
     [3]: https://github.com/bevacqua/measly
     [4]: https://github.com/Raynos/xhr
+    [5]: https://github.com/bevacqua/poser
