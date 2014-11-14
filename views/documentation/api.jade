@@ -483,7 +483,15 @@ section.ly-section.md-markdown
 
     #### Versioning
 
-    In order to turn on the versioning API, set the `version` field in the options when invoking `taunus.mount` **on both the server-side and the client-side, using the same value**. The Taunus version string will be added to the one you provided, so that Taunus will know to stay alert for changes to Taunus itself, as well.
+    When enabled, versioning will look out for discrepancies between what's currently on the client and what's on the server, and reload everything necessary to make what's on the client match what's on the server.
+
+    In order to turn it on, set the `version` field in the options when invoking `taunus.mount` **on both the server-side and the client-side, using the same value**. The Taunus version string will be added to the one you provided, so that Taunus will know to stay alert for changes to Taunus itself, as well.
+
+    > To make sure you don't forget to change the version string in one of the mountpoints, please create a JSON file with just the version string and `require` that file in both sides.
+    >
+    > ```shell
+    > echo '"1.0.0"' > version.json
+    > ```
 
     The default version string is set to `1`. The Taunus version will be prepended to yours, resulting in a value such as `t3.0.0;v1` where Taunus is running version `3.0.0` and your application is running version `1`.
 
@@ -597,6 +605,7 @@ section.ly-section.md-markdown
     - `model` is a reference to the model used to render the current view
     - `prefetch` exposes whether prefetching is turned on
     - `cache` exposes whether caching is enabled
+    - `version` exposes the version string that's currently in use
 
     Of course, your not supposed to meddle with it, so be a good citizen and just inspect its values!
 

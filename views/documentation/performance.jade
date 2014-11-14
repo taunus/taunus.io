@@ -4,4 +4,18 @@ section.ly-section.md-markdown
 
     Given that performance is one of the core values in both Taunus and User Experience, it deserved a first-class article on the site as well.
 
-    TODO
+    There's a few things to take into account when developing an application if we want to strive for performance, and this article aims to be a collection of web performance best practices along with tips on how to improve performance especifically for applications built on top of Taunus.
+
+    # Performance Checklist
+
+    If you haven't, you should read ["Critical Path Performance Optimization"][1] as a small guide of performance optimizations you should already be doing. The list below contains some of what's discussed in that article.
+
+    - Move away from dedicated client-side rendering
+    - Use `nginx` as a reverse proxy for your front-end servers
+    - Resize and optimize images
+    - Defer non-critical static asset loading
+    - Inline critical CSS and JavaScript
+    - Cache responses aggressively
+    - Ditch large libraries and frameworks
+
+    [1]: http://ponyfoo.com/articles/critical-path-performance-optimization
