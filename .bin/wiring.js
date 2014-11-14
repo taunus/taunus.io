@@ -14,32 +14,40 @@ var controllers = {
   'documentation/about': require('../client/js/controllers/documentation/about.js')
 };
 
-var routes = {
-  '/': {
+var routes = [
+  {
+    route: '/',
     action: 'documentation/about'
   },
-  '/getting-started': {
+  {
+    route: '/getting-started',
     action: 'documentation/getting-started'
   },
-  '/api': {
+  {
+    route: '/api',
     action: 'documentation/api'
   },
-  '/complements': {
+  {
+    route: '/complements',
     action: 'documentation/complements'
   },
-  '/performance': {
+  {
+    route: '/performance',
     action: 'documentation/performance'
   },
-  '/source-code': {
+  {
+    route: '/source-code',
     ignore: true
   },
-  '/changelog': {
+  {
+    route: '/changelog',
     ignore: true
   },
-  '/:catchall*': {
+  {
+    route: '/:catchall*',
     action: 'error/not-found'
   }
-};
+];
 
 module.exports = {
   templates: templates,
