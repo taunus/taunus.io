@@ -6,15 +6,12 @@ var taunus = require('taunus');
 var throttle = require('./throttle');
 var slowScrollCheck = throttle(scrollCheck, 50);
 var hx = /^h[1-6]$/i;
-var tracking;
 var heading;
 
-$('body').on('click', 'h1,h2,h3,h4,h5,h6', headingClick);
-
-raf(scroll);
-
 function conventions (container) {
-  tracking = $(container).find('#table-of-contents').length;
+  $('body').on('click', 'h1,h2,h3,h4,h5,h6', headingClick);
+
+  raf(scroll);
 }
 
 function scroll () {
@@ -23,9 +20,6 @@ function scroll () {
 }
 
 function scrollCheck () {
-  if (!tracking) {
-    return;
-  }
   var found = $('main').find('h1,h2,h3,h4,h5,h6').filter(inViewport);
   if (found.length === 0 || heading && found[0] === heading[0]) {
     return;
