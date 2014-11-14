@@ -452,6 +452,8 @@ h6 {
   text-transform: uppercase;
   font-family: 'Unica One', 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
   font-weight: normal;
+  padding: 10px;
+  margin: 10px 0;
 }
 h1[id],
 h2[id],
@@ -676,13 +678,6 @@ h5 {
 }
 h6 {
   font-size: 1.1em;
-}
-h1,
-h2,
-h3,
-h4 {
-  margin-bottom: 15px;
-  padding-bottom: 6px;
 }
 @media only screen and (min-width: 768px) {
   h1 {

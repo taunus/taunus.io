@@ -20,6 +20,7 @@ section.ly-section.md-markdown
       - [Compiling your client-side JavaScript](#compiling-your-client-side-javascript)
       - [Using the client-side Taunus API](#using-the-client-side-taunus-api)
       - [Caching and Prefetching](#caching-and-prefetching)
+      - [Versioning](#versioning)
     - [The sky is the limit!](#the-sky-is-the-limit-)
 
     # How it works
@@ -596,6 +597,28 @@ section.ly-section.md-markdown
     If the human clicks on the link before prefetching is completed, he'll navigate to the view as soon as prefetching ends, rather than firing another request. This helps Taunus save precious milliseconds when dealing with latency-sensitive operations.
 
     Turning prefetching on is simply a matter of setting `prefetch` to `true` in the options passed to `taunus.mount`. For additional insights into the performance improvements Taunus can offer, head over to the [Performance Optimizations][25] guide.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    #### Versioning
+
+    When you alter your views, change controllers, or modify the models, chances are the client-side is going to come across one of the following issues.
+
+    - Outdated view template functions in the client-side, causing new models to break
+    - Outdated client-side controllers, causing new models to break or miss out on functionality
+    - Outdated models in the cache, causing new views or controllers to break
+
+    The versioning API handles these issues gracefully on your behalf. The way it works is that whenever you get a response from Taunus, a _version string (configured on the server-side)_ is included with it. If that version string doesn't match the one stored in the client, then the cache will be flushed and the human will be redirected, forcing a full page reload.
+
+    > The versioning API is unable to handle changes to routes, and it's up to you to make sure that the application stays backwards compatible when it comes to routing.
+    >
+    > The versioning API can't intervene when the client-side is heavily relying on cached views and models, and the human is refusing to reload their browser. The server isn't being accessed and thus it can't communicate that everything on the cache may have become stale. The good news is that the human won't notice any oddities, as the site will continue to work as he knows it. When he finally attempts to visit something that isn't cached, a request is made, and the versioning engine resolves version discrepancies for them.
+
+    Making use of the versioning API involves setting the `version` field in the options, when invoking `taunus.mount` **on both the server-side and the client-side, using the same value**. The Taunus version string will be added to the one you provided, so that Taunus will know to stay alert for changes to Taunus itself, as well.
+
+    You may use your build identifier or the `version` field in `package.json`, but understand that it may cause the client-side to flush the cache too often _(maybe even on every deployment)_.
+
+    The default version string is set to `1`. The Taunus version will be prepended to yours, resulting in a value such as `t3.0.0;v1` where Taunus is running version `3.0.0` and your application is running version `1`.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
