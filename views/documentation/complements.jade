@@ -12,7 +12,7 @@ section.ly-section.md-markdown
 
     Taunus attempts to bring the server-side mentality of _"not doing everything is okay"_ into the world of client-side web application development as well. To that end, Taunus recommends that you give a shot to libraries that also do **one thing well**.
 
-    In this brief article we'll recommend three different libraries that play well with Taunus, and you'll also learn how to search for modules that can give you access to other functionality you may be interested in.
+    In this brief article we'll recommend a couple different libraries that play well with Taunus, and you'll also learn how to search for modules that can give you access to other functionality you may be interested in.
 
     # Using `dominus` for DOM querying
 
@@ -47,14 +47,33 @@ section.ly-section.md-markdown
 
     # Using `xhr` to make AJAX requests
 
+    A small program called [`xhr`][4] can be used to make AJAX requests and it's bundled with Taunus, because it needs it internally to communicate with the server. As such, it was trivial for Taunus to expose this engine and give you the ability to make AJAX calls of your own using it as well.
 
-
-    # Using `measly` as an upgrade to `xhr`
+    You can check out [the API documentation][6] for an explanation of how our interface to `xhr` works, or you could also [see their API documentation][4] and use that directly instead.
 
     # Complementing your code with small modules
 
+    There's an infinite number of modules that do just one thing well and are eager to be part of your applications. Leverage the Internet to find what you need. Small libraries tend to be better documented, concise to use, and simpler.
+
+    Here's a few examples of modules you could consider.
+
+    - [`observe-js`][7] to get data-binding
+    - [`virtual-dom`][8] to use a virtual DOM diffing algorithm a la [Facebook React][9]
+    - [`hint`][10] progressively enhances your HTML giving you more colorful tooltips
+    - [`rome`][11] is a small calendar component
+
+    You can look for relevant modules using [BrowserifySearch.org][13], the [`npm` search][14], asking around on Twitter, or just by Googling!
+
     [1]: /api
     [2]: https://github.com/bevacqua/dominus
-    [3]: https://github.com/bevacqua/measly
     [4]: https://github.com/Raynos/xhr
     [5]: https://github.com/bevacqua/poser
+    [6]: /api#-taunus-xhr-url-options-done-
+    [7]: https://github.com/polymer/observe-js
+    [8]: https://github.com/Matt-Esch/virtual-dom
+    [9]: https://github.com/facebook/react
+    [10]: https://github.com/bevacqua/hint
+    [11]: https://github.com/bevacqua/rome
+    [12]: https://github.com/bevacqua/hint
+    [13]: http://browserifysearch.org/
+    [14]: https://www.npmjs.org/

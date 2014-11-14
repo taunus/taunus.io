@@ -46,6 +46,7 @@ section.ly-section.md-markdown
       - The [`taunus.route`](#-taunus-route-url-) method
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
       - The [`taunus.state`](#-taunus-state-) property
+      - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
     - The [`.taunusrc`](#the-taunusrc-manifest) manifest
 
     # Server-side API
@@ -578,7 +579,7 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    # `taunus.route.equals(route, route)`
+    #### `taunus.route.equals(route, route)`
 
     Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs.
 
@@ -598,6 +599,33 @@ section.ly-section.md-markdown
     - `cache` exposes whether caching is enabled
 
     Of course, your not supposed to meddle with it, so be a good citizen and just inspect its values!
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.xhr(url, options?, done)`
+
+    This method allows you to issue your own AJAX requests through the `xhr` module. It sets a few convenient defaults, _listed below_, where `url` refers to the URL passed as the first parameter.
+
+    ```js
+    {
+      url: url,
+      json: true,
+      headers: { Accept: 'application/json' }
+    }
+    ```
+
+    The `done(err, body, res)` callback will be invoked when the request finishes, and it'll be passed three parameters, an optional error if something went wrong _(request failed, was aborted, etc.)_ and a `body` parameter containing the response body. The raw `res` object that's typically provided by [`xhr`][16] as the second parameter is provided as the third parameter instead.
+
+    As an example, here is a `GET` request.
+
+    ```js
+    taunus.xhr('/api/places', function (err, body) {
+      console.log(body);
+      // <- { places: ['underwater fortress', 'island mansion'] }
+    });
+    ```
+
+    Always remember to handle the case where `err` is set!
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -642,3 +670,4 @@ section.ly-section.md-markdown
     [13]: http://en.wikipedia.org/wiki/Single-page_application
     [14]: http://caniuse.com/#feat=indexeddb
     [15]: /getting-started#versioning
+    [16]: https://github.com/Raynos/xhr
