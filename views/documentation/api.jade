@@ -16,6 +16,7 @@ section.ly-section.md-markdown
           - [`getDefaultViewModel`](#-options-getdefaultviewmodel-)
           - [`plaintext`](#-options-plaintext-)
           - [`resolvers`](#-options-resolvers-)
+          - [`version`](#-options-version-)
         - Its [`addRoute`](#-addroute-definition-) argument
       - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
       - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
@@ -35,6 +36,7 @@ section.ly-section.md-markdown
         - Using the [`manual`](#using-the-manual-strategy) strategy
         - [Caching](#caching)
         - [Prefetching](#prefetching)
+        - [Versioning](#versioning)
       - The [`taunus.on`](#-taunus-on-type-fn-) method
       - The [`taunus.once`](#-taunus-once-type-fn-) method
       - The [`taunus.off`](#-taunus-off-type-fn-) method
@@ -148,6 +150,12 @@ section.ly-section.md-markdown
     `getView(action)`             | Return path to view template module
 
     The `addRoute` method passed to `taunus.mount` on the server-side is mostly going to be used internally by the HTTP framework plugins, so feel free to skip over the following section.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.version?`
+
+    Refer to the [Versioning](#versioning) section.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -471,6 +479,26 @@ section.ly-section.md-markdown
     If caching is enabled, the next logical step is prefetching. This is enabled just by adding `prefetch: true` to the options passed to `taunus.mount`. The prefetching feature will fire for any anchor link that's trips over a `mouseover` or a `touchstart` event. If a route matches the URL in the `href`, an AJAX request will prefetch the view and cache its contents, improving perceived performance.
 
     When links are clicked before prefetching finishes, they'll wait on the prefetcher to finish before immediately switching to the view, effectively cutting down the response time. If the link was already prefetched or otherwise cached, the view will be loaded immediately. If the human hovers over a link and another one was already being prefetched, then that one is aborted. This prevents prefetching from draining the bandwidth on clients with limited or intermittent connectivity.
+
+    #### Versioning
+
+    When you alter your views, change controllers, or modify the models, chances are the client-side is going to come across one of the following issues.
+
+    - Outdated view template functions in the client-side, causing new models to break
+    - Outdated client-side controllers, causing new models to break or miss out on functionality
+    - Outdated models in the cache, causing new views or controllers to break
+
+    The versioning API handles these issues gracefully on your behalf. The way it works is that whenever you get a response from Taunus, a _version string (configured on the server-side)_ is included with it. If that version string doesn't match the one stored in the client, then the cache will be flushed and the human will be redirected, forcing a full page reload.
+
+    > The versioning API is unable to handle changes to routes, and it's up to you to make sure that the application stays backwards compatible when it comes to routing.
+    >
+    > The versioning API can't intervene when the client-side is heavily relying on cached views and models, and the human is refusing to reload their browser. The server isn't being accessed and thus it can't communicate that everything on the cache may have become stale. The good news is that the human won't notice any oddities, as the site will continue to work as he knows it. When he finally attempts to visit something that isn't cached, a request is made, and the versioning engine resolves version discrepancies for them.
+
+    Making use of the versioning API involves setting the `version` field in the options, when invoking `taunus.mount` **on both the server-side and the client-side, using the same value**. The Taunus version string will be added to the one you provided, so that Taunus will know to stay alert for changes to Taunus itself, as well.
+
+    You may use your build identifier or the `version` field in `package.json`, but understand that it may cause the client-side to flush the cache too often _(maybe even on every deployment)_.
+
+    The default version string is set to `1`. The Taunus version will be prepended to yours, resulting in a value such as `t3.0.0;v1` where Taunus is running version `3.0.0` and your application is running version `1`.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
