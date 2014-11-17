@@ -415,7 +415,7 @@ section.ly-section.md-markdown
 
     Note that the `controllers` object is empty because you haven't created any _client-side controllers_ yet. We created server-side controllers but those don't have any effect in the client-side, besides determining what gets sent to the client.
 
-    The CLI can be entirely ignored, you could write these definitions by yourself, but you would have to remember to update this file whenever you add, change, or remove a view, a client-side controller, or a route. Doing that would be cumbersome, and the CLI solves that problem for us at the expense of one additional build step.
+    > **The CLI can be entirely ignored**. You could write these definitions by yourself, but you would have to remember to update the wiring module whenever you add, change, or remove a view, a client-side controller, or a route. Doing that would be cumbersome, and the CLI solves that problem for us at the expense of one additional build step.
 
     During development, you can also add the `--watch` flag, which will rebuild the wiring module if a relevant file changes.
 

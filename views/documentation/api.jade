@@ -20,6 +20,7 @@ section.ly-section.md-markdown
         - Its [`addRoute`](#-addroute-definition-) argument
       - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
       - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
+    - [Server-side controllers](#server-side-controllers)
     - A [suite of plugins](#http-framework-plugins) can integrate Taunus and an HTTP server
       - Using [`taunus-express`](#using-taunus-express-) for [Express][2]
       - Using [`taunus-hapi`](#using-taunus-hapi-) for [Hapi][3]
@@ -47,6 +48,7 @@ section.ly-section.md-markdown
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
       - The [`taunus.state`](#-taunus-state-) property
       - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
+    - [Client-side controllers](#client-side-controllers)
     - The [`.taunusrc`](#the-taunusrc-manifest) manifest
 
     # Server-side API
@@ -184,6 +186,45 @@ section.ly-section.md-markdown
     ## `taunus.rebuildDefaultViewModel(done?)`
 
     Once Taunus has been mounted, calling this method will rebuild the view model defaults using the `getDefaultViewModel` that was passed to `taunus.mount` in the options. An optional `done` callback will be invoked when the model is rebuilt.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    # Server-Side Controllers
+
+    On the server-side, controllers are modules that export a single function. The parameters passed to these controllers depend on the server-side HTTP framework that's being used.
+
+    For example, Express gives us three parameters: `req`, `res` and `next`. Hapi gives us two instead: `request` and `reply`.
+
+    Here's a sample controller using `taunus-express`, as [detailed below](#using-taunus-express-). This is a very simple controller where we are setting the special `viewModel` property on the response, and calling `next`. Suppose this controller is the `product/home` action handler.
+
+    ```js
+    module.exports = function (req, res, next) {
+      res.viewModel = {
+        model: {
+          title: 'view title'
+        }
+      };
+      next();
+    };
+    ```
+
+    As you can see, Taunus won't alter the API provided by Express. Instead, it builds upon the notion of using middleware. Once the `product/home` view is rendered and JavaScript loads, the `product/home` view controller is executed on the client-side.
+
+    You could change the view to be rendered by setting the `action` property on the `model`.
+
+    ```js
+    module.exports = function (req, res, next) {
+      res.viewModel = {
+        model: {
+          title: 'view title'
+        }
+      };
+      if (offline) {
+        res.viewModel.model.action = 'error/offline';
+      }
+      next();
+    };
+    ```
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -399,11 +440,11 @@ section.ly-section.md-markdown
 
     #### Using the `inline` strategy
 
-    The `inline` strategy expects you to add a `data-taunus` attribute on the `container` element. This attribute must be equal to the `id` attribute of a `<script>` tag containing the serialized view model.
+    The `inline` strategy expects you to add a `data-taunus` attribute on the `container` element. This attribute must be equal to the `id` attribute of a `<script>` tag containing the serialized view model alongside the version information automatically injected by Taunus into the layout template data.
 
     ```jade
     div(data-taunus='model')!=partial
-    script(type='text/taunus', data-taunus='model')=JSON.stringify(model)
+    script(type='text/taunus', data-taunus='model')=JSON.stringify({ version: version, model: model })
     ```
 
     Pay special attention to the fact that the model is not only made into a JSON string, _but also HTML encoded by Jade_. When Taunus extracts the model from the `<script>` tag it'll unescape it, and then parse it as JSON.
