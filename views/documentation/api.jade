@@ -592,7 +592,7 @@ section.ly-section.md-markdown
     - `canPreventDefault` tells you if invoking `event.preventDefault` will have any effect
     - `model` starts as `null`, and it can later become the model passed to `preventDefault`
 
-    Interceptors are asynchronous, but if an interceptor spends longer than 200ms it'll be short-circuited and calling `event.preventDefault` past that point won't have any effect.
+    Interceptors are asynchronous, but if an interceptor spends longer than 50ms it'll be short-circuited and calling `event.preventDefault` past that point won't have any effect.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
