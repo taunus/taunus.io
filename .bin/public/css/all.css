@@ -728,6 +728,7 @@ tr {
   border-bottom: 5px double #95cfb7;
 }
 .ly-title:hover {
+  background-color: transparent;
   color: #444;
 }
 .ly-subheading {
