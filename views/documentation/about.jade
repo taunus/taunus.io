@@ -17,11 +17,11 @@ section.ly-section.md-markdown
   :markdown
     # Why Not Other Frameworks?
 
-    Many other frameworks weren't designed with shared-rendering in mind. Content isn't prioritized, and humans are expected to [download most of a web page before they can see any human-digestible content][2]. While Google is going to resolve the SEO issues with dedicated client-side rendering soon, SEO is also a problem. Google isn't the only web crawler operator out there, and it might be a while before social media link crawlers catch up with them.
+    Many other frameworks weren't designed with progressive enhancement, or even shared-rendering in mind. Content isn't prioritized, and humans are expected to [download most of a web page before they can see any digestible content][2]. While Google is going to resolve the SEO issues with dedicated client-side rendering soon, that won't solve all your problems. Google isn't the only web crawler operator out there, and it might be a while before social media link crawlers catch up with them. Even if crawlers are not an issue, being able to provide the fastest possible experience is a big problem to resolve.
 
-    Lately, we can observe many mature open-source frameworks are dropping support for older browsers. This is necessary because of the way they're architected, where the developer is put first. **Taunus is [#humanfirst][1]**, meaning that it concedes that humans are more important than the developers building their applications.
+    Lately, many mature open-source frameworks started dropping support for older browsers. This is necessary because of the way they're architected, where the developer is put first. **Taunus is [#humanfirst][1]**, meaning that it concedes that humans are more important than the developers building their applications.
 
-    Progressively enhanced applications are always going to have great browser support because of the way they're architected. As the name implies, a baseline is established where we deliver the core experience to the user _(typically in the form of readable HTML content)_, and then enhance it **if possible** using CSS and JavaScript. Building applications in this way means that you'll be able to reach the most people with your core experience, and you'll also be able to provide humans in more modern browsers with all of the latest features and technologies.
+    Progressively enhanced applications are always going to have great browser support because of the way they're architected. As the name implies, a baseline is established where we deliver the core experience to the user _(typically in the form of readable HTML content)_, and then enhance it **if possible** using CSS and JavaScript. Building applications in this way means that **you'll be able to reach the most people with your core experience**, and you'll also be able to provide humans in more modern browsers with all of the latest features and technologies.
 
     [1]: https://twitter.com/hashtag/humanfirst
     [2]: http://ponyfoo.com/articles/stop-breaking-the-web
@@ -30,7 +30,7 @@ section.ly-section.md-markdown
   :markdown
     # Features
 
-    Out of the box, Taunus ensures that your site works on any HTML-enabled document viewer and even the terminal, providing support for plain text responses [without any configuration needed][2]. Even while Taunus provides shared-rendering capabilities, it offers code reuse of views and routes, meaning you'll only have to declare these once but they'll be used in both the server-side and the client-side.
+    Out of the box, Taunus ensures that your site works on any HTML-enabled document viewer, or even on the terminal, providing support for plain text responses [without any configuration needed][2]. Even while Taunus provides shared-rendering capabilities, it offers code reuse of views and routes, meaning you'll only have to declare these once but they'll be used in both the server-side and the client-side.
 
     Taunus features a reasonably enhanced experience, where if features aren't available on a browser, they're just not provided. For example, the client-side router makes use of the `history` API but if that's not available then it'll fall back to simply not meddling with links instead of using a client-side-only hash router.
 

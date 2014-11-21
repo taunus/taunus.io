@@ -17,6 +17,7 @@ section.ly-section.md-markdown
           - [`plaintext`](#-options-plaintext-)
           - [`resolvers`](#-options-resolvers-)
           - [`version`](#-options-version-)
+          - [`deferMinified`](#-options-deferminified-)
         - Its [`addRoute`](#-addroute-definition-) argument
       - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
       - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
@@ -28,8 +29,9 @@ section.ly-section.md-markdown
       - The [`--output`](#-output-) flag
       - The [`--watch`](#-watch-) flag
       - The [`--transform <module>`](#-transform-module-) flag
+      - The [`--defer`](#-defer-actions-) flag
       - The [`--resolvers <module>`](#-resolvers-module-) flag
-      - The [`--standalone`](#-standalone-) flag
+      - The [`--bundle`](#-bundle-) flag
     - A [client-side API](#client-side-api) that deals with client-side rendering
       - The [`taunus.mount`](#-taunus-mount-container-wiring-options-) method
         - Using the [`auto`](#using-the-auto-strategy) strategy
@@ -48,6 +50,7 @@ section.ly-section.md-markdown
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
       - The [`taunus.state`](#-taunus-state-) property
       - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
+      - [Debugging Taunus](#debugging-taunus)
     - [Client-side controllers](#client-side-controllers)
     - The [`.taunusrc`](#the-taunusrc-manifest) manifest
 
@@ -159,6 +162,28 @@ section.ly-section.md-markdown
     ###### `options.version?`
 
     Refer to the [Versioning](#versioning) section.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.getPartial?`
+
+    By default, Taunus will render partials on the server-side by looking up the module for an action method, and calling that action passing in a model.
+
+    You can override the default behavior by setting `options.getPartial` to a function. This method takes three parameters.
+
+    - `action` is the action that needs to be rendered
+    - `model` is the model you can use to render the view for that action
+    - `done(err, html)` is called when you're done, passing in the resulting `html` for the partial
+
+    Note that if you don't set `getPartial`, Taunus will just require your controller action method and invoke that instead.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ###### `options.deferMinified?`
+
+    When views and controllers are lazily loaded, they are compiled and bundled using Browserify. Taunus will even produce a source map. To avoid the source map, and minify the bundle instead, set `deferMinified` to `true`.
+
+    You'll probably want to set `deferMinified` to whether the application is running on the production environment.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -372,6 +397,24 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
+    ## `--defer [actions]`
+
+    <sub>the `-d` alias is available</sub>
+
+    Here is where things get interesting. The `--defer` flag allows you to defer loading for zero or more actions. Excluding the controller and view templates for any deferred action can significantly reduce the fingerprint of your application.
+
+    When components get deferred, they'll be loaded as soon as Taunus detects that they're needed. This can happen in a few places.
+
+    - The user navigates to (or [_prefetches_](#prefetching)) the `/admin` route, and `admin/index` was deferred, and its components aren't cached on the client-side yet
+    - A controller uses `taunus.partial` to render an action that was deferred, and its components aren't cached on the client-side yet
+    - The user navigates to the `/admin` route, and its matching `admin/index` route wasn't deferred, but the server-side controller decides to change the action to `admin/superadmin`. When the response gets to the client, it'll need to ask the server for the `admin/superadmin` template if the client doesn't already have it
+
+    You don't have to worry about those different scenarios, though, as Taunus handles them all for you transparently. You should [learn more about deferred loading on the performance optimization guide](/performance#send-views-and-controllers-to-the-client-selectively).
+
+    The only concern with deferred execution is that partial views may not be rendered immediately, as a request may be necessary to fetch the controller or template for the partial.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## `--resolvers <module>`
 
     <sub>the `-r` alias is available</sub>
@@ -385,13 +428,13 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `--standalone`
+    ## `--bundle`
 
-    <sub>the `-s` alias is available</sub>
+    <sub>the `-b` alias is available</sub>
 
     Under this experimental flag, the CLI will use Browserify to compile a standalone module that includes the wiring normally exported by the CLI plus all of Taunus [as a UMD module][10].
 
-    This would allow you to use Taunus on the client-side even if you don't want to use [Browserify][11] directly.
+    This allows you to use Taunus on the client-side even if you don't want to use [Browserify][11] directly.
 
     Feedback and suggestions about this flag, _and possible alternatives that would make Taunus easier to use_, are welcome.
 
@@ -551,6 +594,7 @@ section.ly-section.md-markdown
     -----------------|-------------------------|------------------------------------
     `'start'`        | `container, model, route`      | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
     `'render'`       | `container, model, route`      | A view has just been rendered and its client-side controller is about to be invoked
+    `'change'`       | `route, model`          | Same as `'render'`, but only if `container` is the mountpoint and the route has changed.
     `'fetch.start'`  |  `route, context`       | Emitted whenever an XHR request starts.
     `'fetch.done'`   |  `route, context, data` | Emitted whenever an XHR request ends successfully.
     `'fetch.abort'`  |  `route, context`       | Emitted whenever an XHR request is purposely aborted.
@@ -657,6 +701,8 @@ section.ly-section.md-markdown
     - `cache` exposes whether caching is enabled
     - `version` exposes the version string that's currently in use
 
+    There's also a `clear` method accessible through `taunus.state.clear`, which will empty the cache, as well as remove from the `state` any controllers and templates that were lazy loaded.
+
     Of course, your not supposed to meddle with it, so be a good citizen and just inspect its values!
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
@@ -685,6 +731,28 @@ section.ly-section.md-markdown
     ```
 
     Always remember to handle the case where `err` is set!
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## Debugging Taunus
+
+    On the client-side, you will typically `require` Taunus using the statement below.
+
+    ```js
+    var taunus = require('taunus');
+    ```
+
+    However, you could also turn on the internal debug logger simply by using another entry point!
+
+    ```js
+    var taunus = require('taunus/browser/debug');
+    ```
+
+    The screenshot below contains an example of this mechanism, where using [`taunus.partial`](#-taunus-partial-container-action-model-) triggers a flurry of debug messages.
+
+    ![debug.png][17]
+
+    This is particularly helpful during development, but also useful if you don't understand exactly how Taunus is doing something, as the logger is pretty verbose.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -746,3 +814,4 @@ section.ly-section.md-markdown
     [14]: http://caniuse.com/#feat=indexeddb
     [15]: /getting-started#versioning
     [16]: https://github.com/Raynos/xhr
+    [17]: http://i.imgur.com/CjbIHy0.png
