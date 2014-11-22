@@ -804,6 +804,7 @@ tr {
 }
 .md-markdown pre,
 .md-markdown code {
+  text-transform: none;
   background-color: #f8f8f8;
 }
 .md-markdown blockquote {
