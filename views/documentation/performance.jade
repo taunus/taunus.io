@@ -38,7 +38,7 @@ section.ly-section.md-markdown
 
     If your models are consistently small because you have little dynamic content, or if you want to _execute the client-side controller as quickly as possible_, then the [`inline`][4] strategy might be the best for you. Here you're expected to place the model in a `<script>` tag inside the view layout, and Taunus takes care of the rest.
 
-    The third strategy is [`manual`][6], where you are supposed to somehow get a model, presumably using AJAX or script loading, and then letting Taunus know that you're done. This might be faster than the [`auto`][3] approach, because you could write an inline script to fetch the model as Taunus is being downloaded. It also might be slower than `auto` in those cases where `auto` would've used a cached copy of the model instead of making a request, so your mileage may vary.
+    The third strategy is [`manual`][6], where you are supposed to somehow get a model, presumably using AJAX or script loading, and then letting Taunus know that you're done. This might be faster than the [`auto`][3] approach, because you could write an inline script to fetch the model as Taunus is being downloaded. It also might be slower than `auto` in those cases where `auto` would've used a cached copy of the model instead of making a request, so _your mileage may vary_.
 
     For more complex use cases, you may want to consider mixing different boot strategies, choosing the one that makes the most sense in each case. In these cases, you need to pay attention to having an agreement between what's being done in the view layout _(script inlining, AJAX call, or doing nothing)_ and the [`taunus.mount`][5] call _(picking a boot strategy that matches what's being done on the layout)_.
 
@@ -50,19 +50,35 @@ section.ly-section.md-markdown
 
     Taunus implements a two-tiered cache in which items are persisted both in-memory and in an IndexedDB database. This provides faster access to the cache while ensuring that data persists across browser reloads. In browsers that don't support IndexedDB, only the in-memory cache will be used.
 
-    The cache can significantly improve your application's perceived responsiveness, but it could also do damage if your application is updated too frequently. It can also prove problematic if the models are highly volatile. While caching isn't the solution to the latter, the former can be addressed using [versioning](#use-versioning-to-ensure-cache-validity).
+    > You can also use a [custom request interceptor][8] to listen for requests before they become AJAX calls and prevent that from happenning. The caching layer is in fact built as a request interceptor. You may want to use other mechanisms for preventing AJAX requests from being made, such as inferring a model from the models that were fetched so far for other views, or maybe simply preventing the request for views that don't need a model from the server at all.
+
+    The **cache can significantly improve your application's perceived responsiveness**, but it could also do damage if your application is updated too frequently but you cache responses for long periods of time. It can also prove problematic if the models are highly volatile, as a cached response might be used for a view that expects some value to change every time. While caching isn't the solution to the latter, the former can be addressed using [versioning](#use-versioning-to-ensure-cache-validity).
 
     <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Use versioning to ensure cache validity
 
-    _(UNDER CONSTRUCTION)_
+    Versioning is a tough problem that single-page application frameworks don't address. If your framework of choice renders your application as a SPA, how exactly will it behave when you push updates to the server, [many times a day][10]? Is it well defined? Will views received before the deployment be updated to the latest version? Will models cached in the old version of the application be invalidated? Will new views and client-side controllers make it to the user?
+
+    Taunus handles all of these scenarios for you. Every response from the server contains the current version string for your app. If a response updates the version number stored in the client, cached views, controllers, and models, will become invalidated.
+
+    If at any point Taunus is relying solely on the cache to render a view, then yes, the user will see the same view with the same model and the same controller that he saw a few seconds ago. But whenever a request hits the server and gets back to the client with an updated version number, Taunus will know to redirect the user _(or re-fetch each view)_ so that the user gets the upgraded experience.
+
+    > Most importantly, versioning means that responses from the server will never break communication with clients that were connected before a deployment introduced an update, changing the models that the server returns, while the client expected models using a different structure.
+
+    To [enable versioning][11] you just have to choose a version number on both the server and the client mountpoints. This number should be updated with discretion, as frequent changes to the version number may defeat the performance improvements of client-side rendering.
 
     <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Enable prefetching for predictive cache loading
 
-    _(UNDER CONSTRUCTION)_
+    > Prefetching can yield huge performance boosts by simply issuing requests as soon as the human hints at his interest to load a view.
+
+    By default Taunus ships with an _"on-hover/on-touch-start"_ prefetcher that you can enable just by [setting the `prefetch: true` option][12] on the client-side mountpoint. It works by starting to fetch the model for a view as soon as humans hover over an anchor link, or put their finger on it on mobile devices. When the human does decide to click on the link, the prefetcher may be done, meaning that they'll be instantly redirected. If the prefetcher is still working, you'd still be making a shortcut, as the user will be redirected as soon as the prefetcher finishes, giving you a head start and representing a perceived performance boost.
+
+    You can also create your own prefetching rules. Maybe you'd like to start prefetching a view as soon as humans start moving the mouse cursor towards a link. When you consider that a user shows intent to navigate to an action, you can call [`taunus.prefetch`][13] and start loading everything necessary for the view to be immediately loaded.
+
+    Note that the prefetcher can only load one route at a time. This is by design, as prefetching lots of links would interfere with the human's connectivity, doing more harm than good. If the prefetcher is already loading a route when another attempt to prefetch is registered, the old request will be aborted to make room for the new one.
 
     <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
@@ -79,3 +95,9 @@ section.ly-section.md-markdown
     [5]: /api#-taunus-mount-container-wiring-options-
     [6]: /api#using-the-manual-strategy
     [7]: /api#caching
+    [8]: /api#-taunus-intercept-action-fn-
+    [9]: http://rauchg.com/2014/7-principles-of-rich-web-applications/
+    [10]: http://bevacqua.io/bf
+    [11]: /api#versioning
+    [12]: /api#prefetching
+    [13]: /api#using-taunus-prefetch-url-element-

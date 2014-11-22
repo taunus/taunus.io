@@ -50,6 +50,7 @@ section.ly-section.md-markdown
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
       - The [`taunus.state`](#-taunus-state-) property
       - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
+      - The [`taunus.prefetch`](#using-taunus-prefetch-url-element-) method
       - [Debugging Taunus](#debugging-taunus)
     - [Client-side controllers](#client-side-controllers)
     - The [`.taunusrc`](#the-taunusrc-manifest) manifest
@@ -586,7 +587,7 @@ section.ly-section.md-markdown
 
     The default version string is set to `1`. The Taunus version will be prepended to yours, resulting in a value such as `t3.0.0;v1` where Taunus is running version `3.0.0` and your application is running version `1`.
 
-    Refer to the Getting Started guide for a more detailed [analysis of the uses for versioning][15].
+    Refer to the Getting Started guide for a more detailed [analysis of the uses for versioning][15]. There's some more nuggets of information in the [Performance Optimization][18] guide as well.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -635,10 +636,10 @@ section.ly-section.md-markdown
     - `url` contains the URL that needs a view model
     - `route` contains the full route object as you'd get from [`taunus.route(url)`](#-taunus-route-url-)
     - `parts` is just a shortcut for `route.parts`
-    - `preventDefault(model)` allows you to suppress the need for an AJAX request, commanding Taunus to use the model you've provided instead
+    - `preventDefault(data)` allows you to suppress the need for an AJAX request, commanding Taunus to use the response data you've provided instead
     - `defaultPrevented` tells you if some other handler has prevented the default behavior
     - `canPreventDefault` tells you if invoking `event.preventDefault` will have any effect
-    - `model` starts as `null`, and it can later become the model passed to `preventDefault`
+    - `data` starts as `null`, and it can later become the data passed to `preventDefault`
 
     Interceptors are asynchronous, but if an interceptor spends longer than 50ms it'll be short-circuited and calling `event.preventDefault` past that point won't have any effect.
 
@@ -738,6 +739,23 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
+    # Using `taunus.prefetch(url, element)`
+
+
+
+
+
+
+    .........
+
+
+
+
+
+
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
     ## Debugging Taunus
 
     On the client-side, you will typically `require` Taunus using the statement below.
@@ -819,3 +837,4 @@ section.ly-section.md-markdown
     [15]: /getting-started#versioning
     [16]: https://github.com/Raynos/xhr
     [17]: http://i.imgur.com/CjbIHy0.png
+    [18]: /performance#use-versioning-to-ensure-cache-validity
