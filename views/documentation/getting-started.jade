@@ -568,14 +568,15 @@ section.ly-section.md-markdown
 
     Taunus can notify you whenever important events occur.
 
-    Event            | Arguments               | Description
-    -----------------|-------------------------|------------------------------------
-    `'start'`        | `container, model`      | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
-    `'render'`       | `container, model`      | A view has just been rendered and its client-side controller is about to be invoked
-    `'fetch.start'`  |  `route, context`       | Emitted whenever an XHR request starts.
-    `'fetch.done'`   |  `route, context, data` | Emitted whenever an XHR request ends successfully.
-    `'fetch.abort'`  |  `route, context`       | Emitted whenever an XHR request is purposely aborted.
-    `'fetch.error'`  |  `route, context, err`  | Emitted whenever an XHR request results in an HTTP error.
+    Event            | Arguments                 | Description
+    -----------------|---------------------------|------------------------------------
+    `'start'`        | `container, model, route` | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
+    `'render'`       | `container, model, route` | A view has just been rendered and its client-side controller is about to be invoked
+    `'change'`       | `route, model`            | Same as `'render'`, but only if `container` is the mountpoint and the route has changed.
+    `'fetch.start'`  |  `route, context`         | Emitted whenever an XHR request starts.
+    `'fetch.done'`   |  `route, context, data`   | Emitted whenever an XHR request ends successfully.
+    `'fetch.abort'`  |  `route, context`         | Emitted whenever an XHR request is purposely aborted.
+    `'fetch.error'`  |  `route, context, err`    | Emitted whenever an XHR request results in an HTTP error.
 
     Besides events, there's a couple more methods you can use. The `taunus.navigate` method allows you to navigate to a URL without the need for a human to click on an anchor link. Then there's `taunus.partial`, and that allows you to render any partial view on a DOM element of your choosing, and it'll then invoke its controller. You'll need to come up with the model yourself, though.
 

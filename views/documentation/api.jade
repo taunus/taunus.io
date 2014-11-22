@@ -594,15 +594,15 @@ section.ly-section.md-markdown
 
     Taunus emits a series of events during its lifecycle, and `taunus.on` is the way you can tune in and listen for these events using a subscription function `fn`.
 
-    Event            | Arguments               | Description
-    -----------------|-------------------------|------------------------------------
-    `'start'`        | `container, model, route`      | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
-    `'render'`       | `container, model, route`      | A view has just been rendered and its client-side controller is about to be invoked
-    `'change'`       | `route, model`          | Same as `'render'`, but only if `container` is the mountpoint and the route has changed.
-    `'fetch.start'`  |  `route, context`       | Emitted whenever an XHR request starts.
-    `'fetch.done'`   |  `route, context, data` | Emitted whenever an XHR request ends successfully.
-    `'fetch.abort'`  |  `route, context`       | Emitted whenever an XHR request is purposely aborted.
-    `'fetch.error'`  |  `route, context, err`  | Emitted whenever an XHR request results in an HTTP error.
+    Event            | Arguments                 | Description
+    -----------------|---------------------------|------------------------------------
+    `'start'`        | `container, model, route` | Emitted when `taunus.mount` finished the route setup and is about to invoke the client-side controller. Subscribe to this event before calling `taunus.mount`.
+    `'render'`       | `container, model, route` | A view has just been rendered and its client-side controller is about to be invoked
+    `'change'`       | `route, model`            | Same as `'render'`, but only if `container` is the mountpoint and the route has changed.
+    `'fetch.start'`  |  `route, context`         | Emitted whenever an XHR request starts.
+    `'fetch.done'`   |  `route, context, data`   | Emitted whenever an XHR request ends successfully.
+    `'fetch.abort'`  |  `route, context`         | Emitted whenever an XHR request is purposely aborted.
+    `'fetch.error'`  |  `route, context, err`    | Emitted whenever an XHR request results in an HTTP error.
 
     Consider for instance that you'd like to keep track of every view that gets rendered, and what DOM element it gets placed into. The piece of code below would quickly do that for us.
 
