@@ -403,6 +403,10 @@ section.ly-section.md-markdown
 
     Here is where things get interesting. The `--defer` flag allows you to defer loading for zero or more actions. Excluding the controller and view templates for any deferred action can significantly reduce the fingerprint of your application.
 
+    The `[actions]` argument determines what actions get deferred, and which don't. It expects a comma-separated list of actions, where you can pass in either the controller name, or both the controller name and the action name. Using `?` acts as a wildcard.
+
+    For example, using `admin` _(equivalent to using `admin/?`)_ will defer every action under the `admin` controller. Using `admin/nuke` will only defer the `admin/nuke` action. If you omit the `[actions]` parameter entirely, the default value of `'?'` will be used and everything will be deferred.
+
     When components get deferred, they'll be loaded as soon as Taunus detects that they're needed. This can happen in a few places.
 
     - The user navigates to (or [_prefetches_](#prefetching)) the `/admin` route, and `admin/index` was deferred, and its components aren't cached on the client-side yet
