@@ -46,7 +46,7 @@ section.ly-section.md-markdown
 
     # Turn on client-side caching
 
-    A caching engine is built into Taunus, and it's very easy to set up, you just have to ask for it by passing `cache: true` to the client-side mountpoint. The cache can be used as a means to avoid making expensive AJAX calls for well-defined periods of time. You can determine how long an item will be cached for on a global level, as well as on a route-by-route basis.
+    A caching engine is built into Taunus, and it's very easy to set up, you just have to ask for it by passing [`cache: true`][7] to the client-side mountpoint. The cache can be used as a means to avoid making expensive AJAX calls for well-defined periods of time. You can determine how long an item will be cached for on a global level, as well as on a route-by-route basis.
 
     Taunus implements a two-tiered cache in which items are persisted both in-memory and in an IndexedDB database. This provides faster access to the cache while ensuring that data persists across browser reloads. In browsers that don't support IndexedDB, only the in-memory cache will be used.
 
@@ -78,3 +78,4 @@ section.ly-section.md-markdown
     [4]: /api#using-the-inline-strategy
     [5]: /api#-taunus-mount-container-wiring-options-
     [6]: /api#using-the-manual-strategy
+    [7]: /api#caching
