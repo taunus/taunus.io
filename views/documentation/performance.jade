@@ -2,7 +2,7 @@ section.ly-section.md-markdown
   :markdown
     # Performance Optimization
 
-    Given that performance is one of the core values in both Taunus and User Experience, it deserved a first-class article on the site as well.
+    Given that performance is one of the core values in both Taunus and User Experience, it deserved a first-class article on this site as well.
 
     There's a few things to take into account when developing an application if we want to strive for performance, and this article aims to be a collection of web performance best practices along with tips on how to improve performance especifically for applications built on top of Taunus.
 
@@ -22,33 +22,59 @@ section.ly-section.md-markdown
 
     When it comes to Taunus, there's a few more performance tweaks you should consider implementing.
 
-    - Choose the right boot strategy
-    - Turn on client-side caching
-    - Enable prefetching for predictive cache loading
-    - Use versioning to ensure cache relevance
-    - Send views and controllers to the client selectively
+    - Choose [the right boot strategy](#choose-the-right-boot-strategy)
+    - Turn on client-side [caching](#turn-on-client-side-caching)
+    - [Use versioning](#use-versioning-to-ensure-cache-validity) to ensure cache validity
+    - Enable prefetching for [predictive cache loading](#enable-prefetching-for-predictive-cache-loading)
+    - [Send views and controllers to the client selectively](#send-views-and-controllers-to-the-client-selectively)
 
     Given that this site is about Taunus, we'll focus on the Taunus tweaks, as you can readily scour the web for general web performance advice.
 
     # Choose the right boot strategy
 
-    _(UNDER CONSTRUCTION)_
+    Taunus needs to conjure up a view model so that you have access to its properties in the client-side view controller. To that end, Taunus offers three different boot strategies because there isn't a one-size-fits-all answer to the question _"which boot strategy is the best one for me?"_.
+
+    When you want a relaxed approach to using Taunus, you should go for the [`auto`][3] strategy. Maybe you're just getting started or you're not as concerned about performance just yet. Here Taunus will wait on you to call [`taunus.mount`][5], and then make an AJAX request to get the model for that view on your behalf. _This is the strategy that Taunus uses by default._
+
+    If your models are consistently small because you have little dynamic content, or if you want to _execute the client-side controller as quickly as possible_, then the [`inline`][4] strategy might be the best for you. Here you're expected to place the model in a `<script>` tag inside the view layout, and Taunus takes care of the rest.
+
+    The third strategy is [`manual`][6], where you are supposed to somehow get a model, presumably using AJAX or script loading, and then letting Taunus know that you're done. This might be faster than the [`auto`][3] approach, because you could write an inline script to fetch the model as Taunus is being downloaded. It also might be slower than `auto` in those cases where `auto` would've used a cached copy of the model instead of making a request, so your mileage may vary.
+
+    For more complex use cases, you may want to consider mixing different boot strategies, choosing the one that makes the most sense in each case. In these cases, you need to pay attention to having an agreement between what's being done in the view layout _(script inlining, AJAX call, or doing nothing)_ and the [`taunus.mount`][5] call _(picking a boot strategy that matches what's being done on the layout)_.
+
+    <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Turn on client-side caching
 
+    A caching engine is built into Taunus, and it's very easy to set up, you just have to ask for it by passing `cache: true` to the client-side mountpoint. The cache can be used as a means to avoid making expensive AJAX calls for well-defined periods of time. You can determine how long an item will be cached for on a global level, as well as on a route-by-route basis.
+
+    Taunus implements a two-tiered cache in which items are persisted both in-memory and in an IndexedDB database. This provides faster access to the cache while ensuring that data persists across browser reloads. In browsers that don't support IndexedDB, only the in-memory cache will be used.
+
+    The cache can significantly improve your application's perceived responsiveness, but it could also do damage if your application is updated too frequently. It can also prove problematic if the models are highly volatile. While caching isn't the solution to the latter, the former can be addressed using [versioning](#use-versioning-to-ensure-cache-validity).
+
+    <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
+
+    # Use versioning to ensure cache validity
+
     _(UNDER CONSTRUCTION)_
+
+    <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Enable prefetching for predictive cache loading
 
     _(UNDER CONSTRUCTION)_
 
-    # Use versioning to ensure cache relevance
-
-    _(UNDER CONSTRUCTION)_
+    <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Send views and controllers to the client selectively
 
     _(UNDER CONSTRUCTION)_
 
+    <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
+
     [1]: http://ponyfoo.com/articles/critical-path-performance-optimization
     [2]: http://nginx.org/
+    [3]: /api#using-the-auto-strategy
+    [4]: /api#using-the-inline-strategy
+    [5]: /api#-taunus-mount-container-wiring-options-
+    [6]: /api#using-the-manual-strategy
