@@ -414,9 +414,11 @@ section.ly-section.md-markdown
     - A controller uses `taunus.partial` to render an action that was deferred, and its components aren't cached on the client-side yet
     - The user navigates to the `/admin` route, and its matching `admin/index` route wasn't deferred, but the server-side controller decides to change the action to `admin/superadmin`. When the response gets to the client, it'll need to ask the server for the `admin/superadmin` template if the client doesn't already have it
 
-    You don't have to worry about those different scenarios, though, as Taunus handles them all for you transparently. You should [learn more about deferred loading on the performance optimization guide](/performance#send-views-and-controllers-to-the-client-selectively).
+    You don't have to worry about those different scenarios, though, as Taunus handles them all for you transparently. You should [learn more about deferred loading on the Performance Optimization guide][20].
 
-    The only concern with deferred execution is that partial views may not be rendered immediately, as a request may be necessary to fetch the controller or template for the partial.
+    > A possible concern with deferred execution is that partial views may not be rendered immediately, as a request may be necessary to fetch the controller or template for the partial.
+
+    Some other considerations, regarding how deferred components get bundled, are listed in the [Performance Optimization][20] guide.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -649,6 +651,8 @@ section.ly-section.md-markdown
 
     This method provides you with access to the view-rendering engine of Taunus. You can use it to render the `action` view into the `container` DOM element, using the specified `model`. Once the view is rendered, the `render` event will be fired _(with `container, model` as arguments)_ and the client-side controller for that view will be executed.
 
+    Note that the partial may be rendered asynchronously if the `action` is [deferred](#-defer-actions-) and its components (view template, controller) aren't readily available in the client yet.
+
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
     ## `taunus.navigate(url, options)`
@@ -741,18 +745,9 @@ section.ly-section.md-markdown
 
     # Using `taunus.prefetch(url, element)`
 
+    The prefetcher API allows you to start fetching an `url`, provided that it matches a known Taunus view route and that [the cache](#caching) is enabled. The `element` is used mostly as context during event emission, and it can be useful for debugging as well.
 
-
-
-
-
-    .........
-
-
-
-
-
-
+    Use cases for prefetching are further discussed in the [Performance Optimization][19] guide.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -838,3 +833,5 @@ section.ly-section.md-markdown
     [16]: https://github.com/Raynos/xhr
     [17]: http://i.imgur.com/CjbIHy0.png
     [18]: /performance#use-versioning-to-ensure-cache-validity
+    [19]: /performance#enable-prefetching-for-predictive-cache-loading
+    [20]: /performance#send-views-and-controllers-to-the-client-selectively

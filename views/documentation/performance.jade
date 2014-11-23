@@ -78,13 +78,27 @@ section.ly-section.md-markdown
 
     You can also create your own prefetching rules. Maybe you'd like to start prefetching a view as soon as humans start moving the mouse cursor towards a link. When you consider that a user shows intent to navigate to an action, you can call [`taunus.prefetch`][13] and start loading everything necessary for the view to be immediately loaded.
 
-    Note that the prefetcher can only load one route at a time. This is by design, as prefetching lots of links would interfere with the human's connectivity, doing more harm than good. If the prefetcher is already loading a route when another attempt to prefetch is registered, the old request will be aborted to make room for the new one.
+    Note that **the prefetcher can only load _one route_ at a time**. This is by design, as prefetching lots of links would interfere with the human's connectivity, doing more harm than good. If the prefetcher is already loading a route when another attempt to prefetch is registered, the old request will be aborted to make room for the new one.
 
     <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
     # Send views and controllers to the client selectively
 
-    _(UNDER CONSTRUCTION)_
+    The most ambitious performance optimization that can be done with Taunus is deferring client-side views and controllers. The default behavior is to compile every view and controller, alongside routes and Taunus itself, and send everything in a single bundle to the client. As your application grows, it might no longer be practical to send everything together in a huge bundle, as performance would suffer.
+
+    Taunus offers a mechanism through which you can defer specific actions, or parts of the application. When one of those parts of the application needs to be loaded, even when using [`taunus.partial`][14], the server-side will bundle the view template module and the client-side controller module and send that to the client. The client then runs `eval` on the bundle and proceeds to store it in its cache, using the same caching mechanism that's used for models _(except that views and controllers only go stale due to version changes, and never because of durations)_.
+
+    To make use of the deferral mechanism you have to take a few things into consideration. First off, you'll have to use the [`--defer`][15] flag in the CLI to select the actions you want to defer. For instance, doing `taunus --defer admin` will defer all actions for the `admin` controller.
+
+    Deferred modules are bundled with Browserify and get **source maps by default**, so debugging them during development is as easy as debugging non-deferred controllers or view template functions. You can change this behavior by [setting `deferMinified: true` at the server-side mountpoint][16], which will minify the bundle and also remove the sourcemap. These bundles are generated the first time that they get requested, and subsequent requests for the same bundle will receive a copy that gets cached in memory.
+
+    You have to be careful when deferring views and controllers, as the bundle for every component will be compiled independently. Here's a few considerations to take in mind.
+
+    - Use `require('taunus/global')` instead of `require('taunus')`. This way you'll access Taunus globally without embedding the entire library again. This is **mandatory for deferred components** that need to access the `taunus` public API
+    - Similarly, try and make use of globals for any large libraries you plan to use on deferred components. Each module you reference globally is a module that's not compiled on every component that `require`s it. This translates into leaner responses when clients need to fetch a template and a client-side controller
+    - Avoid maintaining global state across view controllers using modules. If you need to do so, consider using events instead. Deferred modules are self-contained, meaning that even if two separate controllers require a `./state` module, each controller will get its own copy of the `./state` module, and nothing will be shared.
+
+    In the future, transports other than CommonJS may be available for defining controllers and view templates that can be deferred, but for now that's the only viable transport when it comes to deferred execution in Taunus.
 
     <sub>[_(back to table of contents)_](#boosting-performance-with-taunus)</sub>
 
@@ -101,3 +115,6 @@ section.ly-section.md-markdown
     [11]: /api#versioning
     [12]: /api#prefetching
     [13]: /api#using-taunus-prefetch-url-element-
+    [14]: /api#-taunus-partial-container-action-model-
+    [15]: /api#-defer-actions-
+    [16]: /api#-options-deferminified-

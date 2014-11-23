@@ -25,7 +25,7 @@
     "hapiify": "^1.0.0",
     "jadum": "^1.4.0",
     "raf": "^2.0.4",
-    "taunus": "^3.0.1",
+    "taunus": "^3.1.0",
     "taunus-hapi": "^1.1.0",
     "ultramarked": "^1.7.0"
   },
