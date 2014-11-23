@@ -544,7 +544,7 @@ thead tr {
 }
 body {
   font-family: 'Fauna One', 'Helvetica Neue', HelveticaNeue, TeXGyreHeros, FreeSans, 'Nimbus Sans L', 'Liberation Sans', Helvetica, Arial, sans-serif;
-  background: #fbf3ea;
+  background-color: rgba(245,223,201,0.2);
   color: #444;
 }
 ul,
@@ -740,7 +740,7 @@ tr {
 }
 .ly-section {
   padding: 20px;
-  background-color: rgba(245,223,201,0.3);
+  background-color: #fbf3ea;
   margin: 20px 0;
 }
 @media only screen and (min-width: 768px) {
@@ -773,7 +773,7 @@ tr {
     display: block;
   }
   .sb-container {
-    background-color: rgba(245,223,201,0.3);
+    background-color: #fbf3ea;
     margin-bottom: 25px;
   }
 }
