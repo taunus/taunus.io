@@ -20,6 +20,7 @@ section.ly-section.md-markdown
           - [`deferMinified`](#-options-deferminified-)
         - Its [`addRoute`](#-addroute-definition-) argument
       - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
+      - The [`taunus.resolve`](#-taunus-resolve-action-data-) method
       - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
     - [Server-side controllers](#server-side-controllers)
     - A [suite of plugins](#http-framework-plugins) can integrate Taunus and an HTTP server
@@ -48,6 +49,7 @@ section.ly-section.md-markdown
       - The [`taunus.navigate`](#-taunus-navigate-url-options-) method
       - The [`taunus.route`](#-taunus-route-url-) method
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
+      - The [`taunus.resolve`](#-taunus-resolve-on-the-client) method
       - The [`taunus.state`](#-taunus-state-) property
       - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
       - The [`taunus.prefetch`](#using-taunus-prefetch-url-element-) method
@@ -212,6 +214,25 @@ section.ly-section.md-markdown
     ## `taunus.rebuildDefaultViewModel(done?)`
 
     Once Taunus has been mounted, calling this method will rebuild the view model defaults using the `getDefaultViewModel` that was passed to `taunus.mount` in the options. An optional `done` callback will be invoked when the model is rebuilt.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.resolve(action, data?)`
+
+    Returns the first route that matches an `action`, replacing named parameters with data from the `data` object. If a matching route is not found, `null` is returned.
+
+    > If a route is matched but a required named parameter isn't in `data`, **an exception will be thrown**.
+
+    This method is most useful when composing the URL for a redirect or an action link within a template, as a means to keep the route declaration isolated from the route itself. If the route changes, the method will reflect the newer route as long as the parameters stay the same, resulting in increased maintainability. _The method is available in both layout templates and partial view templates._
+
+    ###### Example
+
+    ```js
+    taunus.resolve('projects/project', {
+      name: 'puppies', organization: 'caniuse'
+    });
+    // <- /p/caniuse/puppies
+    ```
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
@@ -693,6 +714,12 @@ section.ly-section.md-markdown
     #### `taunus.route.equals(route, route)`
 
     Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.resolve` on the client
+
+    This method is identical to the server-side flavor of [`taunus.resolve(action, data)`](#-taunus-resolve-action-data-), but available on the client-side.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
