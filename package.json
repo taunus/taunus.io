@@ -8,14 +8,14 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bevacqua/taunus.bevacqua.io.git"
+    "url": "https://github.com/taunus/taunus.bevacqua.io.git"
   },
   "author": "Nicolas Bevacqua <nicolasbevacqua@gmail.com> (http://bevacqua.io/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bevacqua/taunus.bevacqua.io/issues"
+    "url": "https://github.com/taunus/taunus.bevacqua.io/issues"
   },
-  "homepage": "https://github.com/bevacqua/taunus.bevacqua.io",
+  "homepage": "https://github.com/taunus/taunus.bevacqua.io",
   "scripts": {
     "start": "./start"
   },
