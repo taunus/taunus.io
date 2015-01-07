@@ -48,7 +48,7 @@ section.ly-section.md-markdown
       - The [`taunus.intercept`](#-taunus-intercept-action-fn-) method
       - The [`taunus.partial`](#-taunus-partial-container-action-model-) method
       - The [`taunus.navigate`](#-taunus-navigate-url-options-) method
-      - The [`taunus.route`](#-taunus-route-url-startindex-) method
+      - The [`taunus.route`](#-taunus-route-url-) method
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
       - The [`taunus.resolve`](#-taunus-resolve-on-the-client) method
       - The [`taunus.state`](#-taunus-state-) property
@@ -672,7 +672,7 @@ section.ly-section.md-markdown
     An interceptor function will receive an `event` parameter, containing a few different properties.
 
     - `url` contains the URL that needs a view model
-    - `route` contains the full route object as you'd get from [`taunus.route(url, startIndex?)`](#-taunus-route-url-startindex-)
+    - `route` contains the full route object as you'd get from [`taunus.route(url)`](#-taunus-route-url-)
     - `parts` is just a shortcut for `route.parts`
     - `preventDefault(data)` allows you to suppress the need for an AJAX request, commanding Taunus to use the response data you've provided instead
     - `defaultPrevented` tells you if some other handler has prevented the default behavior
@@ -693,7 +693,7 @@ section.ly-section.md-markdown
 
     ## `taunus.navigate(url, options)`
 
-    Whenever you want to navigate to a URL, say when an AJAX call finishes after a button click, you can use `taunus.navigate` passing it a plain URL or anything that would cause `taunus.route(url, startIndex?)` to return a valid route.
+    Whenever you want to navigate to a URL, say when an AJAX call finishes after a button click, you can use `taunus.navigate` passing it a plain URL or anything that would cause `taunus.route(url)` to return a valid route.
 
     By default, if `taunus.navigate(url, options)` is called with an `url` that doesn't match any client-side route, then the user will be redirected via `location.href`. In cases where the browser doesn't support the history API, `location.href` will be used as well.
 
@@ -711,9 +711,9 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.route(url, startIndex?)`
+    ## `taunus.route(url)`
 
-    This convenience method allows you to break down a URL into its individual components. The method accepts any of the following URL patterns, and it returns a Taunus route object. The optional `startIndex` argument specifies what index to start at, as seen on `taunus.state.routes`.
+    This convenience method allows you to break down a URL into its individual components. The method accepts any of the following URL patterns, and it returns a Taunus route object.
 
     - A fully qualified URL on the same origin, e.g `http://taunus.bevacqua.io/api`
     - An absolute URL without an origin, e.g `/api`
