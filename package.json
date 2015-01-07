@@ -25,8 +25,8 @@
     "hapiify": "^1.0.0",
     "jadum": "^1.4.0",
     "raf": "^2.0.4",
-    "taunus": "^3.2.1",
-    "taunus-hapi": "^1.2.0",
+    "taunus": "^4.0.0",
+    "taunus-hapi": "^1.4.0",
     "ultramarked": "^1.7.0"
   },
   "devDependencies": {
