@@ -241,6 +241,8 @@ section.ly-section.md-markdown
 
     Redirects the response to a different URL. If the page was being loaded for the first time, this method is equivalent to `res.redirect(url)`. If the page was being loaded via the client-side AJAX routing engine, a specially crafted JSON response will trigger a full page reload on the client-side.
 
+    As a convenience, `res.redirect` will call `taunus.redirect` internally when using [`taunus-express`][7]
+
     ###### Example
 
     ```js
