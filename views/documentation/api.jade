@@ -728,7 +728,7 @@ section.ly-section.md-markdown
 
     #### `taunus.route.equals(route, route)`
 
-    Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs.
+    Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs. That's because the hash portion of an URL is never sent to the server.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
