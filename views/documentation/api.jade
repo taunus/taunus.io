@@ -532,7 +532,7 @@ section.ly-section.md-markdown
 
     ```jade
     div(data-taunus='model')!=partial
-    script(type='text/taunus', data-taunus='model')=JSON.stringify({ version: version, model: model })
+    script#model(type='text/taunus')=JSON.stringify({ version: version, model: model })
     ```
 
     Pay special attention to the fact that the model is not only made into a JSON string, _but also HTML encoded by Jade_. When Taunus extracts the model from the `<script>` tag it'll unescape it, and then parse it as JSON.
