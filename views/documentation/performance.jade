@@ -94,9 +94,8 @@ section.ly-section.md-markdown
 
     You have to be careful when deferring views and controllers, as the bundle for every component will be compiled independently. Here's a few considerations to take in mind.
 
-    - Use `require('taunus/global')` instead of `require('taunus')`. This way you'll access Taunus globally without embedding the entire library again. This is **mandatory for deferred components** that need to access the `taunus` public API
-    - Similarly, try and make use of globals for any large libraries you plan to use on deferred components. Each module you reference globally is a module that's not compiled on every component that `require`s it. This translates into leaner responses when clients need to fetch a template and a client-side controller
-    - Avoid maintaining global state across view controllers using modules. If you need to do so, consider using events instead. Deferred modules are self-contained, meaning that even if two separate controllers require a `./state` module, each controller will get its own copy of the `./state` module, and nothing will be shared.
+    - Take into account that each module you reference globally is a module that's not compiled on every component that `require`s it. This translates into leaner responses when clients need to fetch a template and a client-side controller
+    - Avoid maintaining global state across view controllers using modules. If you need to do so, consider using events instead. Deferred modules are self-contained, meaning that even if two separate controllers require a given `./state` module, each controller will get its own idependent instance of the `./state` module, and nothing will be shared.
 
     In the future, transports other than CommonJS may be available for defining controllers and view templates that can be deferred, but for now that's the only viable transport when it comes to deferred execution in Taunus.
 
