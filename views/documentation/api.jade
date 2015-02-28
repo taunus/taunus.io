@@ -686,7 +686,25 @@ section.ly-section.md-markdown
 
     This method provides you with access to the view-rendering engine of Taunus. You can use it to render the `action` view into the `container` DOM element, using the specified `model`. Once the view is rendered, the `render` event will be fired _(with `container, model` as arguments)_ and the client-side controller for that view will be executed.
 
-    Note that the partial may be rendered asynchronously if the `action` is [deferred](#-defer-actions-) and its components (view template, controller) aren't readily available in the client yet.
+    Note that the partial may be rendered asynchronously if the `action` is [deferred](#-defer-actions-) and its components (view template, controller) aren't readily available in the client yet. This method returns an event emitter, which you can use to guarantee that you continue exection after the partial has been rendered.
+
+    #### Example
+
+    Given a deferred `'tags'` partial view like this function:
+
+    ```js
+    function (model) {
+      return model.length ? '<ul><li>' + model.join('</li><li>') + '</li></ul>' : '<ul></ul>';
+    }
+    ```
+
+    You could render the view and continue execution once the view has been rendered onto a `div` by listening to the `'render'` event at the view level.
+
+    ```js
+    taunus.partial(div, 'tags', ['a', 'b']).on('render', function (html) {
+      console.log('Here\'s the HTML that was rendered on our div\n' + html);
+    });
+    ```
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
