@@ -21,7 +21,7 @@ section.ly-section.md-markdown
         - Its [`addRoute`](#-addroute-definition-) argument
       - The [`taunus.render`](#-taunus-render-action-viewmodel-req-res-next-) method
       - The [`taunus.resolve`](#-taunus-resolve-action-data-) method
-      - The [`taunus.redirect`](#-taunus-redirect-req-res-url-) method
+      - The [`taunus.redirect`](#-taunus-redirect-req-res-url-options-) method
       - The [`taunus.rebuildDefaultViewModel`](#-taunus-rebuilddefaultviewmodel-done-) method
     - [Server-side controllers](#server-side-controllers)
     - A [suite of plugins](#http-framework-plugins) can integrate Taunus and an HTTP server
@@ -237,11 +237,9 @@ section.ly-section.md-markdown
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
-    ## `taunus.redirect(req, res, url)`
+    ## `taunus.redirect(req, res, url, options?)`
 
-    Redirects the response to a different URL. If the page was being loaded for the first time, this method is equivalent to `res.redirect(url)`. If the page was being loaded via the client-side AJAX routing engine, a specially crafted JSON response will trigger a full page reload on the client-side.
-
-    As a convenient syntactic sugar, `res.redirect` will call `taunus.redirect` internally when using [`taunus-express`][7].
+    Redirects the response to a different URL. If the request accepts HTML, this method is equivalent to `res.redirect(url)`. If the request accepts JSON, a specially crafted JSON response will trigger a client-side redirect using [taunus.navigate](#-taunus-navigate-url-options-). You can force a full page redirect by setting `hard: true` in the `options?` object.
 
     ###### Example
 
