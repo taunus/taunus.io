@@ -50,6 +50,7 @@ section.ly-section.md-markdown
       - The [`taunus.navigate`](#-taunus-navigate-url-options-) method
       - The [`taunus.route`](#-taunus-route-url-) method
         - The [`taunus.route.equals`](#-taunus-route-equals-route-route-) method
+      - The [`taunus.redirect`](#-taunus-redirect-options-) method
       - The [`taunus.resolve`](#-taunus-resolve-on-the-client) method
       - The [`taunus.state`](#-taunus-state-) property
       - The [`taunus.xhr`](#-taunus-xhr-url-options-done-) method
@@ -727,6 +728,18 @@ section.ly-section.md-markdown
     #### `taunus.route.equals(route, route)`
 
     Compares two routes and returns `true` if they would fetch the same model. Note that different URLs may still return `true`. For instance, `/foo` and `/foo#bar` would fetch the same model even if they're different URLs. That's because the hash portion of an URL is never sent to the server.
+
+    <sub>[_(back to table of contents)_](#table-of-contents)</sub>
+
+    ## `taunus.redirect(options)`
+
+    Redirects the user to a different URL. If `hard` is set to `true`, then this method is effectively the same as doing `location.href = options.href`. If `hard` is `false`, [taunus.navigate](#-taunus-navigate-url-options-) will be used.
+
+    ###### Example
+
+    ```js
+    taunus.redirect({ href: '/foo', hard: true });
+    ```
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
