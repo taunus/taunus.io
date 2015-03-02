@@ -240,7 +240,12 @@ section.ly-section.md-markdown
 
     ## `taunus.redirect(req, res, url, options?)`
 
-    Redirects the response to a different URL. If the request accepts HTML, this method is equivalent to `res.redirect(url)`. If the request accepts JSON, a specially crafted JSON response will trigger a client-side redirect using [taunus.navigate](#-taunus-navigate-url-options-). You can force a full page redirect by setting `hard: true` in the `options?` object.
+    Redirects the response to a different URL. If the request accepts HTML, this method is equivalent to `res.redirect(url)`. If the request accepts JSON, a specially crafted JSON response will trigger a client-side redirect using [taunus.navigate](#-taunus-navigate-url-options-).
+
+    Option  | Description
+    --------|--------------------------------------------------------------------------------
+    `hard`  | Uses a full page redirect when `true`
+    `force` | Client-side redirects will be carried out even if the target URL is the same as the current `location`
 
     ###### Example
 
@@ -758,6 +763,8 @@ section.ly-section.md-markdown
     ```js
     taunus.redirect({ href: '/foo', hard: true });
     ```
+
+    When the `force` option is set to `true`, redirects will be carried out even if the target URL is the same as the current `location`.
 
     <sub>[_(back to table of contents)_](#table-of-contents)</sub>
 
