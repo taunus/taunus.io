@@ -20,7 +20,7 @@ jadum views/** -o .bin --watch &
 taunus -ot hapiify
 
 # compile client-side javascript and wait for changes to recompile it
-watchify client/js/main.js -o .bin/public/js/all.js --basedir client/js --debug --verbose &
+watchify client/js/main.js -o .bin/public/js/all.js --debug --verbose &
 
 # `node app` and watch for changes
 nodemon app

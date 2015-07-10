@@ -1,22 +1,21 @@
 'use strict';
 
-
 var util = require('util');
 var Hapi = require('hapi');
 var taunus = require('taunus');
 var taunusHapi = require('taunus-hapi')(taunus);
 var routing = require('./controllers/routing');
 var routes = require('./controllers/routes');
-var layout = require('./.bin/views/layout')
+var layout = require('./.bin/views/layout');
 var port = process.env.PORT || 3000;
-var pack = new Hapi.Pack();
+var server = new Hapi.Server();
 
-pack.server('0.0.0.0', port);
+server.connection({ port: port });
 
-routing(pack);
+routing(server);
 
-pack.register({
-  plugin: taunusHapi,
+server.register({
+  register: taunusHapi,
   options: {
     routes: routes,
     layout: layout
@@ -24,7 +23,7 @@ pack.register({
 }, registered);
 
 function registered () {
-  pack.start(started);
+  server.start(started);
 }
 
 function started () {

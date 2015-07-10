@@ -20,19 +20,21 @@
     "start": "./start"
   },
   "dependencies": {
-    "dominus": "^2.5.1",
-    "hapi": "^7.5.0",
+    "dominus": "^5.0.2",
+    "hapi": "^8.8.0",
     "hapiify": "^1.0.0",
     "jadum": "^1.4.0",
-    "raf": "^2.0.4",
-    "taunus": "^4.1.8",
+    "raf": "^3.0.0",
+    "stylus": "^0.51.1",
+    "taunus": "^7.1.0",
     "taunus-hapi": "^1.4.0",
     "ultramarked": "^1.7.0"
   },
   "devDependencies": {
     "emoji-random": "^0.1.2",
-    "nib": "^1.0.4",
-    "nodemon": "^1.2.1",
-    "normalize.css": "^3.0.2"
+    "nib": "^1.1.0",
+    "nodemon": "^1.3.7",
+    "normalize.css": "^3.0.3",
+    "watchify": "^3.2.3"
   }
 }
