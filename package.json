@@ -1,5 +1,5 @@
 {
-  "name": "taunus.bevacqua.io",
+  "name": "taunus.io",
   "version": "1.0.2",
   "engines": {
     "node": "0.10.x"
@@ -8,14 +8,21 @@
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/taunus/taunus.bevacqua.io.git"
+    "url": "https://github.com/taunus/taunus.io.git"
   },
   "author": "Nicolas Bevacqua <nicolasbevacqua@gmail.com> (http://bevacqua.io/)",
+  "contributors": [{
+    "name": "Nicolas Bevacqua",
+    "email": "nicolasbevacqua@gmail.com"
+  }, {
+    "name": "JC Ivancevich",
+    "email": "jc.ivancevich@gmail.com"
+  }],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/taunus/taunus.bevacqua.io/issues"
+    "url": "https://github.com/taunus/taunus.io/issues"
   },
-  "homepage": "https://github.com/taunus/taunus.bevacqua.io",
+  "homepage": "https://github.com/taunus/taunus.io",
   "scripts": {
     "start": "./start"
   },
