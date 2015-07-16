@@ -11,13 +11,16 @@
     "url": "https://github.com/taunus/taunus.io.git"
   },
   "author": "Nicolas Bevacqua <nicolasbevacqua@gmail.com> (http://bevacqua.io/)",
-  "contributors": [{
-    "name": "Nicolas Bevacqua",
-    "email": "nicolasbevacqua@gmail.com"
-  }, {
-    "name": "JC Ivancevich",
-    "email": "jc.ivancevich@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Nicolas Bevacqua",
+      "email": "nicolasbevacqua@gmail.com"
+    },
+    {
+      "name": "JC Ivancevich",
+      "email": "jc.ivancevich@gmail.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/taunus/taunus.io/issues"
@@ -31,9 +34,10 @@
     "hapi": "^8.8.0",
     "hapiify": "^1.0.0",
     "jadum": "^1.4.0",
-    "raf": "^3.0.0",
+    "jstransformer-ultramarked": "^1.0.0",
+    "raf": "^3.1.0",
     "stylus": "^0.51.1",
-    "taunus": "^7.1.0",
+    "taunus": "^7.1.5",
     "taunus-hapi": "^1.4.0",
     "ultramarked": "^1.7.0"
   },

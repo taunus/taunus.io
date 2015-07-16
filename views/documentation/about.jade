@@ -1,5 +1,5 @@
 section.ly-section.md-markdown
-  :markdown
+  :ultramarked
     # Why Taunus?
 
     Taunus focuses on delivering a progressively enhanced experience to the end-user, while providing _a reasonable development experience_ as well. **Taunus prioritizes content**. It uses server-side rendering to get content to your humans as fast as possible, and it uses client-side rendering to improve their experience.
@@ -14,7 +14,7 @@ section.ly-section.md-markdown
     [2]: http://ponyfoo.com/articles/adjusting-ux-for-humans
 
 section.ly-section.md-markdown
-  :markdown
+  :ultramarked
     # Why Not Other Frameworks?
 
     Many other frameworks weren't designed with progressive enhancement, or even shared-rendering in mind. Content isn't prioritized, and humans are expected to [download most of a web page before they can see any digestible content][2]. While Google is going to resolve the SEO issues with dedicated client-side rendering soon, that won't solve all your problems. Google isn't the only web crawler operator out there, and it might be a while before social media link crawlers catch up with them. Even if crawlers are not an issue, being able to provide the fastest possible experience is a big problem to resolve.
@@ -27,7 +27,7 @@ section.ly-section.md-markdown
     [2]: http://ponyfoo.com/articles/stop-breaking-the-web
 
 section.ly-section.md-markdown
-  :markdown
+  :ultramarked
     # Features
 
     Out of the box, Taunus ensures that your site works on any HTML-enabled document viewer, or even on the terminal, providing support for plain text responses [without any configuration needed][2]. Even while Taunus provides shared-rendering capabilities, it offers code reuse of views and routes, meaning you'll only have to declare these once but they'll be used in both the server-side and the client-side.
@@ -48,7 +48,7 @@ section.ly-section.md-markdown
     [4]: http://caniuse.com/#search=indexeddb
 
 section.ly-section.md-markdown
-  :markdown
+  :ultramarked
     # Familiarity
 
     You can use Taunus to develop applications using your favorite Node.js HTTP server, **both [Express][3] and [Hapi][4] are fully supported**. In both cases, you'll [build controllers the way you're already used to][1], except you won't have to `require` the view controllers or define any view routes since Taunus will deal with that on your behalf. In the controllers you'll be able to do everything you're already able to do, and then you'll have to return a JSON model which will be used to render a view.
