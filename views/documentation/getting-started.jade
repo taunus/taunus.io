@@ -596,7 +596,7 @@ section.ly-section.md-markdown
 
     #### Caching and Prefetching
 
-    [Performance][25] plays an important role in Taunus. That's why the you can perform caching and prefetching on the client-side just by turning on a pair of flags. But what do these flags do exactly?
+    [Performance][25] plays an important role in Taunus. That's why you can perform caching and prefetching on the client-side just by turning on a pair of flags. But what do these flags do exactly?
 
     When turned on, by passing `{ cache: true }` as the third parameter for `taunus.mount`, the caching layer will make sure that responses are kept around for `15` seconds. Whenever a route needs a model in order to render a view, it'll first ask the caching layer for a fresh copy. If the caching layer doesn't have a copy, or if that copy is stale _(in this case, older than `15` seconds)_, then an AJAX request will be issued to the server. Of course, the duration is configurable. If you want to use a value other than the default, you should set `cache` to a number in seconds instead of just `true`.
 
