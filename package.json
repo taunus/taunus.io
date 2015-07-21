@@ -36,16 +36,15 @@
     "jadum": "^1.4.0",
     "jstransformer-ultramarked": "^1.0.0",
     "raf": "^3.1.0",
-    "stylus": "^0.51.1",
-    "taunus": "^7.1.5",
-    "taunus-hapi": "^1.4.0",
-    "ultramarked": "^1.7.0"
+    "stylus": "^0.52.0",
+    "taunus": "^7.1.6",
+    "taunus-hapi": "^1.4.0"
   },
   "devDependencies": {
     "emoji-random": "^0.1.2",
     "nib": "^1.1.0",
-    "nodemon": "^1.3.7",
+    "nodemon": "^1.3.8",
     "normalize.css": "^3.0.3",
-    "watchify": "^3.2.3"
+    "watchify": "^3.3.0"
   }
 }
